@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security+ SY0-701 Training Platform v9.2</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #09090b;
+            color: #fafafa;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        #root { min-height: 100vh; }
+        
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background: #18181b;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #27272a;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .hub-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .domain-card {
+            background: #18181b;
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .domain-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-color: var(--domain-color);
+        }
+        
+        .domain-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--domain-color);
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #27272a;
+            overflow-x: auto;
+            padding-bottom: 0;
+        }
+        
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            color: #a1a1aa;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            white-space: nowrap;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .tab:hover { 
+            color: #fafafa;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .tab.active { 
+            color: #fafafa;
+            background: #27272a;
+        }
+        
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--domain-color, #6366f1);
+        }
+        
+        .content-container {
+            background: #18181b;
+            border-radius: 12px;
+            padding: 2rem;
+        }
+        
+        .content-grid {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .content-item {
+            background: #27272a;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .content-item:hover {
+            background: #3a3a3d;
+            transform: translateX(4px);
+            border-left-color: var(--domain-color, #6366f1);
+        }
+        
+        .simulation-viewer, .lesson-viewer {
+            background: #18181b;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .viewer-header {
+            border-bottom: 1px solid #27272a;
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .viewer-content {
+            line-height: 1.7;
+            color: #e4e4e7;
+        }
+        
+        .glossary-grid {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .glossary-term {
+            background: #27272a;
+            border-radius: 8px;
+            padding: 1rem;
+            border-left: 3px solid var(--domain-color, #6366f1);
+        }
+        
+        .glossary-term-name {
+            font-weight: 600;
+            color: var(--domain-color, #6366f1);
+            margin-bottom: 0.25rem;
+        }
+        
+        .glossary-definition {
+            color: #a1a1aa;
+            font-size: 0.95rem;
+        }
+        
+        .quiz-container {
+            background: #18181b;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .option {
+            background: #27272a;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .option:hover:not(.disabled) {
+            background: #3a3a3d;
+            border-color: #6366f1;
+        }
+        
+        .option.selected {
+            background: #3a3a3d;
+            border-color: #6366f1;
+        }
+        
+        .option.correct {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: #10b981;
+        }
+        
+        .option.incorrect {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: #ef4444;
+        }
+        
+        .button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .button:hover:not(:disabled) {
+            background: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        
+        .button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .button.secondary { background: #27272a; }
+        .button.success { background: #10b981; }
+        .button.danger { background: #ef4444; }
+        .button.warning { background: #f59e0b; }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .badge.success { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .badge.warning { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .badge.danger { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .badge.info { background: rgba(99, 102, 241, 0.2); color: #6366f1; }
+        
+        .final-review-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .weakness-analysis {
+            background: #18181b;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .weak-area-item {
+            background: #27272a;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 3px solid #f59e0b;
+        }
+        
+        .recommended-remediation {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 0.5rem;
+        }
+        
+        .info-box {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid #6366f1;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .success-box {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid #10b981;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        @media (max-width: 768px) {
+            .header { 
+                padding: 1rem; 
+                flex-direction: column; 
+                gap: 1rem; 
+            }
+            .main-content { padding: 1rem; }
+            .hub-grid { grid-template-columns: 1fr; }
+            .tabs { gap: 0.25rem; }
+            .tab { padding: 0.5rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useCallback, useRef } = React;
+        
+        // Domain configuration
+        const DOMAINS = [
+            { id: 1, name: 'General Security Concepts', weight: 0.12, color: '#6366f1' },
+            { id: 2, name: 'Threats, Vulnerabilities & Mitigations', weight: 0.22, color: '#f59e0b' },
+            { id: 3, name: 'Security Architecture', weight: 0.18, color: '#10b981' },
+            { id: 4, name: 'Security Operations', weight: 0.28, color: '#8b5cf6' },
+            { id: 5, name: 'Security Program Management', weight: 0.20, color: '#ec4899' }
+        ];
+        
+        // Data (time/duration fields removed)
+        const QUESTION_DATA = [{"id": "D1-Q001", "domain": 1, "question": "Which security control type is a firewall classified as?", "options": ["Physical", "Technical", "Administrative", "Operational"], "correct": 1, "explanation": "A firewall is a technical (logical) control that uses technology to restrict network access based on defined rules."}, {"id": "D1-Q002", "domain": 1, "question": "What is the primary purpose of defense in depth?", "options": ["To reduce costs by consolidating security measures", "To implement multiple layers of security controls", "To focus on perimeter security only", "To eliminate the need for security policies"], "correct": 1, "explanation": "Defense in depth uses multiple layers of security controls so that if one fails, others continue to provide protection."}, {"id": "D1-Q003", "domain": 1, "question": "Which of the following best describes a deterrent control?", "options": ["Backup systems that restore data after an incident", "Warning signs that discourage unauthorized access", "Encryption that protects data confidentiality", "Logs that record security events"], "correct": 1, "explanation": "Deterrent controls discourage potential attackers by making them aware of consequences or obstacles, like warning signs or visible cameras."}, {"id": "D1-Q004", "domain": 1, "question": "What is the main difference between a vulnerability and a threat?", "options": ["Vulnerabilities are external, threats are internal", "Vulnerabilities are weaknesses, threats are potential dangers that exploit them", "Threats are technical, vulnerabilities are human-based", "There is no difference"], "correct": 1, "explanation": "A vulnerability is a weakness in a system, while a threat is a potential danger that could exploit that vulnerability."}, {"id": "D1-Q005", "domain": 1, "question": "Which principle ensures that users only have access to resources necessary for their job functions?", "options": ["Separation of duties", "Least privilege", "Need to know", "Job rotation"], "correct": 1, "explanation": "Least privilege ensures users have only the minimum access rights needed to perform their job functions."}, {"id": "D1-Q006", "domain": 1, "question": "What type of control is a security awareness training program?", "options": ["Technical", "Physical", "Administrative", "Compensating"], "correct": 2, "explanation": "Security awareness training is an administrative (managerial) control that uses policies, procedures, and training to manage security."}, {"id": "D1-Q007", "domain": 1, "question": "Which security concept describes accepting a risk because the cost of mitigation exceeds the potential loss?", "options": ["Risk transference", "Risk avoidance", "Risk acceptance", "Risk mitigation"], "correct": 2, "explanation": "Risk acceptance occurs when an organization decides to accept a risk without taking action, typically when mitigation costs outweigh potential losses."}, {"id": "D1-Q008", "domain": 1, "question": "What is the purpose of implementing separation of duties?", "options": ["To reduce training costs", "To prevent fraud and errors by requiring multiple people for critical tasks", "To increase system performance", "To simplify access control management"], "correct": 1, "explanation": "Separation of duties prevents fraud and errors by ensuring no single person has complete control over critical transactions or processes."}, {"id": "D1-Q009", "domain": 1, "question": "Which control type is designed to restore systems after a security incident?", "options": ["Preventive", "Detective", "Corrective", "Deterrent"], "correct": 2, "explanation": "Corrective controls are implemented to restore systems and repair damage after a security incident has occurred."}, {"id": "D1-Q010", "domain": 1, "question": "What does the term \'attack surface\' refer to?", "options": ["The physical area of a data center", "All possible entry points an attacker could exploit", "The network bandwidth available to attackers", "The number of employees in an organization"], "correct": 1, "explanation": "Attack surface refers to all the possible points where an attacker could enter or extract data from a system or environment."}, {"id": "D1-Q011", "domain": 1, "question": "Which principle states that security should not rely on keeping the methods secret?", "options": ["Security through obscurity", "Kerkhoff\'s principle", "Least privilege", "Defense in depth"], "correct": 1, "explanation": "Kerkhoff\'s principle states that a cryptographic system should remain secure even if everything except the key is public knowledge."}, {"id": "D1-Q012", "domain": 1, "question": "What is a compensating control?", "options": ["A control that replaces a missing or inadequate primary control", "Financial compensation for security breaches", "A control that monitors employee performance", "A backup power system"], "correct": 0, "explanation": "A compensating control is an alternative control implemented when the desired primary control is not feasible or too expensive."}, {"id": "D1-Q013", "domain": 1, "question": "Which of the following best describes confidentiality in the CIA triad?", "options": ["Ensuring data is accessible when needed", "Preventing unauthorized disclosure of information", "Ensuring data has not been altered", "Making data available to everyone"], "correct": 1, "explanation": "Confidentiality ensures that information is not disclosed to unauthorized individuals, processes, or devices."}, {"id": "D1-Q014", "domain": 1, "question": "What is the purpose of a gap analysis in security?", "options": ["To identify network bandwidth limitations", "To compare current security state against desired state", "To measure employee satisfaction", "To calculate return on investment"], "correct": 1, "explanation": "Gap analysis identifies differences between the current security posture and desired security objectives or compliance requirements."}, {"id": "D1-Q015", "domain": 1, "question": "Which security control would a bollard be classified as?", "options": ["Technical", "Administrative", "Physical", "Operational"], "correct": 2, "explanation": "Bollards are physical controls that prevent vehicle access to restricted areas through physical barriers."}, {"id": "D1-Q016", "domain": 1, "question": "What does non-repudiation provide?", "options": ["Proof that a message was sent and received", "Encryption of data in transit", "Multiple backup copies", "Faster network speeds"], "correct": 0, "explanation": "Non-repudiation ensures that a party cannot deny sending or receiving a message, typically through digital signatures."}, {"id": "D1-Q017", "domain": 1, "question": "Which type of authentication factor is a fingerprint scan?", "options": ["Something you know", "Something you have", "Something you are", "Somewhere you are"], "correct": 2, "explanation": "Biometric factors like fingerprint scans fall under \'something you are\' - inherence factors based on physical characteristics."}, {"id": "D1-Q018", "domain": 1, "question": "What is the primary goal of implementing job rotation?", "options": ["To increase employee satisfaction", "To detect fraud and prevent knowledge silos", "To reduce payroll costs", "To improve network performance"], "correct": 1, "explanation": "Job rotation helps detect fraudulent activities and prevents any single employee from having exclusive knowledge of critical systems."}, {"id": "D1-Q019", "domain": 1, "question": "Which security model focuses on preventing information flow from higher to lower security levels?", "options": ["Bell-LaPadula", "Biba", "Clark-Wilson", "Brewer-Nash"], "correct": 0, "explanation": "Bell-LaPadula model focuses on confidentiality and prevents information from flowing from high security levels to low (no read up, no write down)."}, {"id": "D1-Q020", "domain": 1, "question": "What does integrity mean in the context of the CIA triad?", "options": ["Data is accessible when needed", "Data has not been modified in an unauthorized manner", "Data is encrypted", "Data is backed up regularly"], "correct": 1, "explanation": "Integrity ensures that data has not been altered in an unauthorized way and remains accurate and trustworthy."}, {"id": "D1-Q021", "domain": 1, "question": "What is the primary difference between qualitative and quantitative risk analysis?", "options": ["Qualitative uses numbers, quantitative uses descriptions", "Qualitative uses descriptions, quantitative uses numerical values", "They are the same", "Qualitative is faster, quantitative is slower"], "correct": 1, "explanation": "Qualitative risk analysis uses descriptive terms (high/medium/low), while quantitative uses numerical values and calculations."}, {"id": "D1-Q022", "domain": 1, "question": "Which authentication factor category does a smart card belong to?", "options": ["Something you know", "Something you have", "Something you are", "Somewhere you are"], "correct": 1, "explanation": "A smart card is a possession factor - something you have - used for authentication."}, {"id": "D1-Q023", "domain": 1, "question": "What is the purpose of implementing mandatory vacations?", "options": ["Employee wellness", "To detect fraud and misconduct", "To reduce payroll costs", "To improve productivity"], "correct": 1, "explanation": "Mandatory vacations force employees to be away from their duties, allowing others to discover any fraudulent activities."}, {"id": "D1-Q024", "domain": 1, "question": "Which security principle requires multiple people to complete a sensitive task?", "options": ["Least privilege", "Dual control", "Job rotation", "Separation of duties"], "correct": 1, "explanation": "Dual control requires two or more people to complete a critical task, preventing single-person fraud."}, {"id": "D1-Q025", "domain": 1, "question": "What does availability mean in the CIA triad?", "options": ["Data is encrypted", "Data is accurate", "Data is accessible when needed by authorized users", "Data is backed up"], "correct": 2, "explanation": "Availability ensures that systems and data are accessible when needed by authorized users."}, {"id": "D1-Q026", "domain": 1, "question": "Which control type detects security incidents after they occur?", "options": ["Preventive", "Detective", "Corrective", "Deterrent"], "correct": 1, "explanation": "Detective controls identify security incidents after they have occurred through monitoring and logging."}, {"id": "D1-Q027", "domain": 1, "question": "What is the purpose of security guards?", "options": ["Technical control", "Physical and detective control", "Administrative control", "Logical control"], "correct": 1, "explanation": "Security guards serve as both physical controls (preventing access) and detective controls (observing and reporting)."}, {"id": "D1-Q028", "domain": 1, "question": "Which principle limits users to only the information they need for their job?", "options": ["Least privilege", "Need to know", "Separation of duties", "Defense in depth"], "correct": 1, "explanation": "Need to know restricts access to only the specific information required for job functions, even within privilege levels."}, {"id": "D1-Q029", "domain": 1, "question": "What type of control is encryption?", "options": ["Physical", "Administrative", "Technical", "Operational"], "correct": 2, "explanation": "Encryption is a technical control that uses technology to protect data confidentiality."}, {"id": "D1-Q030", "domain": 1, "question": "Which security model focuses on data integrity?", "options": ["Bell-LaPadula", "Biba", "Clark-Wilson", "Both Biba and Clark-Wilson"], "correct": 3, "explanation": "Both Biba and Clark-Wilson models focus on maintaining data integrity, though through different approaches."}, {"id": "D1-Q031", "domain": 1, "question": "What is the primary purpose of background checks?", "options": ["To verify technical skills", "To assess security risks before hiring", "To determine salary levels", "To check social media presence"], "correct": 1, "explanation": "Background checks are administrative controls to assess potential security risks before granting access to sensitive resources."}, {"id": "D1-Q032", "domain": 1, "question": "Which authentication method uses physical characteristics?", "options": ["Password", "Token", "Biometric", "PIN"], "correct": 2, "explanation": "Biometric authentication uses unique physical characteristics like fingerprints, iris, or facial recognition."}, {"id": "D1-Q033", "domain": 1, "question": "What is multi-factor authentication (MFA)?", "options": ["Using multiple passwords", "Using factors from at least two different categories", "Using multiple usernames", "Using biometrics only"], "correct": 1, "explanation": "MFA requires authentication factors from at least two different categories (something you know, have, or are)."}, {"id": "D1-Q034", "domain": 1, "question": "Which control type attempts to repair damage after an incident?", "options": ["Preventive", "Detective", "Corrective", "Compensating"], "correct": 2, "explanation": "Corrective controls repair or restore systems after a security incident has been detected."}, {"id": "D1-Q035", "domain": 1, "question": "What is the principle of implicit deny?", "options": ["Deny all access by default unless explicitly allowed", "Allow all access by default", "Deny only suspicious activities", "Allow access after verification"], "correct": 0, "explanation": "Implicit deny blocks all access by default unless explicitly permitted, following least privilege principles."}, {"id": "D1-Q036", "domain": 1, "question": "Which of the following is an example of administrative control?", "options": ["Firewall", "Security policy", "Encryption", "Biometric scanner"], "correct": 1, "explanation": "Security policies are administrative controls that establish rules and procedures for security management."}, {"id": "D1-Q037", "domain": 1, "question": "What does risk transference mean?", "options": ["Eliminating risk entirely", "Shifting risk to another party", "Accepting risk", "Reducing risk impact"], "correct": 1, "explanation": "Risk transference shifts risk to another party, typically through insurance or outsourcing."}, {"id": "D1-Q038", "domain": 1, "question": "Which security control is a mantrap?", "options": ["Technical", "Administrative", "Physical", "Detective"], "correct": 2, "explanation": "A mantrap is a physical control that uses two doors to control and monitor access to secure areas."}, {"id": "D1-Q039", "domain": 1, "question": "What is the purpose of implementing access control lists (ACLs)?", "options": ["To list all users", "To define who can access specific resources", "To track login attempts", "To encrypt data"], "correct": 1, "explanation": "ACLs specify which users or systems are granted access to objects and what operations they can perform."}, {"id": "D1-Q040", "domain": 1, "question": "Which principle requires critical operations to be divided among multiple people?", "options": ["Least privilege", "Need to know", "Separation of duties", "Defense in depth"], "correct": 2, "explanation": "Separation of duties divides critical operations among multiple people to prevent fraud and errors."}, {"id": "D1-Q041", "domain": 1, "question": "What is single sign-on (SSO)?", "options": ["Using one password for all accounts", "Authenticating once to access multiple systems", "Single-factor authentication", "One-time password"], "correct": 1, "explanation": "SSO allows users to authenticate once and access multiple systems without re-authenticating."}, {"id": "D1-Q042", "domain": 1, "question": "Which control category includes locks and fences?", "options": ["Technical", "Administrative", "Physical", "Logical"], "correct": 2, "explanation": "Locks and fences are physical controls that restrict physical access to facilities and assets."}, {"id": "D1-Q043", "domain": 1, "question": "What is the purpose of audit trails?", "options": ["To prevent attacks", "To record system activities for review", "To encrypt data", "To authenticate users"], "correct": 1, "explanation": "Audit trails record system activities, enabling review, investigation, and accountability."}, {"id": "D1-Q044", "domain": 1, "question": "Which authentication factor is \'somewhere you are\'?", "options": ["Password", "Token", "Fingerprint", "Geolocation"], "correct": 3, "explanation": "Geolocation authentication uses physical location as a factor (somewhere you are)."}, {"id": "D1-Q045", "domain": 1, "question": "What is the difference between identification and authentication?", "options": ["They are the same", "Identification claims identity, authentication proves it", "Authentication claims identity, identification proves it", "Identification is for users, authentication is for systems"], "correct": 1, "explanation": "Identification is claiming an identity (username), while authentication is proving that identity (password)."}, {"id": "D1-Q046", "domain": 1, "question": "Which security principle requires regularly testing security controls?", "options": ["Defense in depth", "Least privilege", "Continuous monitoring", "Need to know"], "correct": 2, "explanation": "Continuous monitoring involves regularly testing and verifying that security controls remain effective."}, {"id": "D1-Q047", "domain": 1, "question": "What is authorization?", "options": ["Proving identity", "Claiming identity", "Granting access to resources after authentication", "Logging access attempts"], "correct": 2, "explanation": "Authorization determines what authenticated users are allowed to access and what actions they can perform."}, {"id": "D1-Q048", "domain": 1, "question": "Which control helps ensure accountability?", "options": ["Encryption", "Logging and auditing", "Firewalls", "Antivirus"], "correct": 1, "explanation": "Logging and auditing create records of user actions, establishing accountability and enabling investigation."}, {"id": "D1-Q049", "domain": 1, "question": "What is defense in depth also known as?", "options": ["Single layer security", "Layered security", "Perimeter security", "Zero trust"], "correct": 1, "explanation": "Defense in depth is also called layered security, using multiple security controls at different layers."}, {"id": "D1-Q050", "domain": 1, "question": "Which principle states that systems should fail in a secure state?", "options": ["Fail-open", "Fail-secure", "Fail-safe", "Both fail-secure and fail-safe"], "correct": 3, "explanation": "Fail-secure/fail-safe means systems default to a secure state during failure, denying access rather than allowing it."}, {"id": "D2-Q001", "domain": 2, "question": "What type of malware locks a user\'s files and demands payment for decryption?", "options": ["Trojan", "Ransomware", "Rootkit", "Spyware"], "correct": 1, "explanation": "Ransomware encrypts victim files and demands payment (ransom) for the decryption key."}, {"id": "D2-Q002", "domain": 2, "question": "Which attack involves overwhelming a system with traffic to make it unavailable?", "options": ["SQL injection", "Cross-site scripting", "Denial of Service (DoS)", "Man-in-the-middle"], "correct": 2, "explanation": "A Denial of Service (DoS) attack floods a system with traffic or requests to exhaust resources and make it unavailable to legitimate users."}, {"id": "D2-Q003", "domain": 2, "question": "What is the difference between a virus and a worm?", "options": ["Viruses require user action to spread, worms self-replicate", "Worms require user action, viruses self-replicate", "They are the same thing", "Viruses only affect files, worms only affect networks"], "correct": 0, "explanation": "Viruses require user action (like opening an infected file) to spread, while worms can self-replicate and spread automatically across networks."}, {"id": "D2-Q004", "domain": 2, "question": "Which social engineering attack uses fake scenarios to trick users into revealing information?", "options": ["Phishing", "Pretexting", "Tailgating", "Shoulder surfing"], "correct": 1, "explanation": "Pretexting involves creating a fabricated scenario or pretext to manipulate victims into divulging information or performing actions."}, {"id": "D2-Q005", "domain": 2, "question": "What type of attack injects malicious SQL commands into input fields?", "options": ["Cross-site scripting (XSS)", "SQL injection", "Buffer overflow", "Directory traversal"], "correct": 1, "explanation": "SQL injection attacks insert malicious SQL statements into input fields to manipulate database queries and access unauthorized data."}, {"id": "D2-Q006", "domain": 2, "question": "Which attack intercepts communication between two parties without their knowledge?", "options": ["Replay attack", "Man-in-the-middle (MITM)", "Session hijacking", "DNS poisoning"], "correct": 1, "explanation": "Man-in-the-middle (MITM) attacks intercept and potentially alter communications between two parties who believe they\'re directly communicating."}, {"id": "D2-Q007", "domain": 2, "question": "What is a zero-day vulnerability?", "options": ["A vulnerability discovered on day zero of a product launch", "A vulnerability unknown to the vendor with no patch available", "A vulnerability that expires after zero days", "A vulnerability that takes zero days to exploit"], "correct": 1, "explanation": "A zero-day vulnerability is a security flaw unknown to the software vendor, meaning there\'s been zero days to create a patch."}, {"id": "D2-Q008", "domain": 2, "question": "Which attack captures and retransmits valid data to gain unauthorized access?", "options": ["Brute force", "Replay attack", "Password spraying", "Dictionary attack"], "correct": 1, "explanation": "Replay attacks capture legitimate authentication data and retransmit it to gain unauthorized access to systems or services."}, {"id": "D2-Q009", "domain": 2, "question": "What type of malware disguises itself as legitimate software?", "options": ["Virus", "Worm", "Trojan", "Ransomware"], "correct": 2, "explanation": "A Trojan (or Trojan horse) disguises itself as legitimate software to trick users into installing it, then performs malicious actions."}, {"id": "D2-Q010", "domain": 2, "question": "Which vulnerability allows attackers to execute code by overwriting memory?", "options": ["SQL injection", "Buffer overflow", "Cross-site scripting", "XML injection"], "correct": 1, "explanation": "Buffer overflow occurs when a program writes more data to a buffer than it can hold, potentially allowing execution of malicious code."}, {"id": "D2-Q011", "domain": 2, "question": "What is spear phishing?", "options": ["Phishing attacks using phone calls", "Targeted phishing attacks against specific individuals or organizations", "Phishing attacks via social media", "Phishing attacks using spear weapons imagery"], "correct": 1, "explanation": "Spear phishing is a targeted phishing attack directed at specific individuals or organizations, using personalized information to appear legitimate."}, {"id": "D2-Q012", "domain": 2, "question": "Which attack redirects users to fake websites by corrupting DNS records?", "options": ["Pharming", "Phishing", "Vishing", "Smishing"], "correct": 0, "explanation": "Pharming redirects users to fraudulent websites by poisoning DNS cache or modifying host files, without requiring user interaction."}, {"id": "D2-Q013", "domain": 2, "question": "What is the primary characteristic of an Advanced Persistent Threat (APT)?", "options": ["Quick, automated attacks", "Long-term, stealthy attacks with specific targets", "Attacks using advanced AI", "Attacks that persist after reboot"], "correct": 1, "explanation": "APTs are prolonged, targeted attacks where adversaries gain and maintain access to networks over extended periods, often for espionage."}, {"id": "D2-Q014", "domain": 2, "question": "Which social engineering technique involves following authorized personnel into restricted areas?", "options": ["Shoulder surfing", "Tailgating", "Dumpster diving", "Pretexting"], "correct": 1, "explanation": "Tailgating (or piggybacking) involves unauthorized individuals following authorized personnel through secure entry points without proper authentication."}, {"id": "D2-Q015", "domain": 2, "question": "What type of attack injects malicious scripts into web pages viewed by other users?", "options": ["SQL injection", "Cross-site scripting (XSS)", "LDAP injection", "Command injection"], "correct": 1, "explanation": "Cross-site scripting (XSS) injects malicious scripts into web pages that are then executed by other users\' browsers."}, {"id": "D2-Q016", "domain": 2, "question": "Which malware hides its presence and provides backdoor access to attackers?", "options": ["Virus", "Rootkit", "Adware", "Spyware"], "correct": 1, "explanation": "Rootkits conceal their presence and the presence of other malware while providing privileged backdoor access to attackers."}, {"id": "D2-Q017", "domain": 2, "question": "What is credential stuffing?", "options": ["Encrypting credentials for secure storage", "Using stolen username/password combinations from one breach on other sites", "Generating random passwords", "Storing multiple credentials in one location"], "correct": 1, "explanation": "Credential stuffing uses automated tools to try stolen username/password pairs from one breach against multiple websites."}, {"id": "D2-Q018", "domain": 2, "question": "Which attack floods systems with SYN requests but never completes the handshake?", "options": ["Smurf attack", "SYN flood", "Ping of death", "Teardrop attack"], "correct": 1, "explanation": "SYN flood attacks send multiple SYN requests but never complete the TCP three-way handshake, exhausting server resources."}, {"id": "D2-Q019", "domain": 2, "question": "What is business email compromise (BEC)?", "options": ["Hacking corporate email servers", "Impersonating business executives to authorize fraudulent transactions", "Encrypting business emails", "Intercepting business emails in transit"], "correct": 1, "explanation": "BEC involves compromising or spoofing business email accounts to impersonate executives and manipulate employees into transferring funds or data."}, {"id": "D2-Q020", "domain": 2, "question": "Which vulnerability allows attackers to access files outside the intended directory?", "options": ["SQL injection", "Directory traversal", "Cross-site scripting", "Buffer overflow"], "correct": 1, "explanation": "Directory traversal (path traversal) attacks manipulate file paths to access files and directories outside the web root folder."}, {"id": "D2-Q021", "domain": 2, "question": "What is the purpose of a watering hole attack?", "options": ["To flood systems with water", "To compromise websites frequented by specific target groups", "To attack water utilities", "To intercept communications"], "correct": 1, "explanation": "Watering hole attacks compromise websites commonly visited by a target group, infecting visitors who access the compromised site."}, {"id": "D2-Q022", "domain": 2, "question": "Which attack attempts many password combinations against a single account?", "options": ["Password spraying", "Brute force", "Rainbow table", "Dictionary attack"], "correct": 1, "explanation": "Brute force attacks systematically try all possible password combinations against an account until the correct one is found."}, {"id": "D2-Q023", "domain": 2, "question": "What type of attack tries a few common passwords against many accounts?", "options": ["Brute force", "Password spraying", "Credential stuffing", "Rainbow table"], "correct": 1, "explanation": "Password spraying tries a small set of common passwords against many user accounts to avoid account lockouts."}, {"id": "D2-Q024", "domain": 2, "question": "Which malware monitors user activities and reports information to attackers?", "options": ["Virus", "Worm", "Spyware", "Logic bomb"], "correct": 2, "explanation": "Spyware covertly monitors user activities, keystrokes, and data, then sends this information to attackers."}, {"id": "D2-Q025", "domain": 2, "question": "What is a logic bomb?", "options": ["Exploding malware", "Malicious code triggered by specific conditions", "A type of physical bomb", "Malware causing logical errors"], "correct": 1, "explanation": "A logic bomb is malicious code that remains dormant until triggered by specific conditions like a date or action."}, {"id": "D2-Q026", "domain": 2, "question": "Which attack amplifies traffic using third-party servers?", "options": ["Amplification attack", "Direct DoS", "Application layer attack", "Slowloris"], "correct": 0, "explanation": "Amplification attacks send small requests to third-party servers that respond with much larger replies to the victim."}, {"id": "D2-Q027", "domain": 2, "question": "What is typosquatting?", "options": ["Squatting in buildings", "Registering misspelled domain names", "Making code typos", "Typing errors"], "correct": 1, "explanation": "Typosquatting registers domain names similar to popular sites with common typos to capture mistyped traffic."}, {"id": "D2-Q028", "domain": 2, "question": "Which vulnerability allows execution of OS commands?", "options": ["SQL injection", "Command injection", "XSS", "CSRF"], "correct": 1, "explanation": "Command injection allows attackers to execute arbitrary commands on the host operating system."}, {"id": "D2-Q029", "domain": 2, "question": "What is a supply chain attack?", "options": ["Attacking shipping companies", "Compromising third-party vendors to reach targets", "Disrupting product supply", "Attacking manufacturers"], "correct": 1, "explanation": "Supply chain attacks compromise trusted third-party vendors or software to gain access to target organizations."}, {"id": "D2-Q030", "domain": 2, "question": "Which attack tricks users into performing unwanted actions?", "options": ["SQL injection", "Cross-site request forgery (CSRF)", "XSS", "Session hijacking"], "correct": 1, "explanation": "CSRF exploits trust a website has in an authenticated user, tricking them into executing unwanted actions."}, {"id": "D2-Q031", "domain": 2, "question": "What is vishing?", "options": ["Visual hacking", "Voice phishing via phone", "Video phishing", "Virtual phishing"], "correct": 1, "explanation": "Vishing (voice phishing) uses phone calls to manipulate victims into revealing sensitive information."}, {"id": "D2-Q032", "domain": 2, "question": "Which attack corrupts DNS cache data?", "options": ["DNS poisoning", "Domain hijacking", "URL redirection", "Subdomain takeover"], "correct": 0, "explanation": "DNS poisoning corrupts DNS cache data, causing queries to return incorrect IPs and redirect users to malicious sites."}, {"id": "D2-Q033", "domain": 2, "question": "What is fileless malware?", "options": ["Malware that deletes files", "Malware operating in memory without writing to disk", "Malware affecting network only", "Cloud-based malware"], "correct": 1, "explanation": "Fileless malware operates entirely in memory using legitimate tools, making it harder to detect."}, {"id": "D2-Q034", "domain": 2, "question": "Which attack uses text messages to trick users?", "options": ["Vishing", "Phishing", "Smishing", "Whaling"], "correct": 2, "explanation": "Smishing (SMS phishing) uses text messages to deceive victims into revealing information or clicking malicious links."}, {"id": "D2-Q035", "domain": 2, "question": "What distinguishes white hat from black hat hackers?", "options": ["Technical skill", "Tools used", "Intent and authorization", "Target selection"], "correct": 2, "explanation": "White hat hackers work legally with authorization, while black hat hackers act maliciously without permission."}, {"id": "D2-Q036", "domain": 2, "question": "Which attack exploits race conditions?", "options": ["Time-of-check to time-of-use (TOCTOU)", "Buffer overflow", "Integer overflow", "SQL injection"], "correct": 0, "explanation": "TOCTOU attacks exploit the time gap between checking a condition and using a resource."}, {"id": "D2-Q037", "domain": 2, "question": "What is a birthday attack used against?", "options": ["Authentication", "Hash functions", "Encryption", "Network protocols"], "correct": 1, "explanation": "Birthday attacks exploit hash collision probabilities to find two inputs producing the same hash output."}, {"id": "D2-Q038", "domain": 2, "question": "Which vulnerability occurs from improper input validation?", "options": ["Input validation vulnerability", "Authentication bypass", "Privilege escalation", "Memory leak"], "correct": 0, "explanation": "Input validation vulnerabilities occur when applications don\'t properly check user input, allowing injection attacks."}, {"id": "D2-Q039", "domain": 2, "question": "What is session hijacking?", "options": ["Creating sessions", "Taking over an authenticated session", "Ending sessions", "Monitoring sessions"], "correct": 1, "explanation": "Session hijacking involves stealing or predicting session tokens to take over authenticated sessions."}, {"id": "D2-Q040", "domain": 2, "question": "Which attack floods targets with ICMP echo requests?", "options": ["Smurf attack", "Ping flood", "SYN flood", "UDP flood"], "correct": 1, "explanation": "Ping flood attacks overwhelm targets with ICMP echo request packets to exhaust bandwidth and resources."}, {"id": "D2-Q041", "domain": 2, "question": "What is the primary goal of reconnaissance?", "options": ["To damage systems", "To gather information about targets", "To steal data", "To install malware"], "correct": 1, "explanation": "Reconnaissance gathers information about targets to identify vulnerabilities and plan attacks."}, {"id": "D2-Q042", "domain": 2, "question": "Which attack uses multiple compromised systems?", "options": ["DoS", "DDoS", "Ping flood", "Smurf attack"], "correct": 1, "explanation": "Distributed Denial of Service (DDoS) attacks use multiple compromised systems to overwhelm targets."}, {"id": "D2-Q043", "domain": 2, "question": "What is privilege escalation?", "options": ["Granting privileges", "Gaining higher access than authorized", "Escalating tickets", "Increasing privileges legitimately"], "correct": 1, "explanation": "Privilege escalation exploits vulnerabilities to gain elevated access rights beyond what was authorized."}, {"id": "D2-Q044", "domain": 2, "question": "Which attack uses pre-computed hash tables?", "options": ["Brute force", "Dictionary attack", "Rainbow table", "Password spraying"], "correct": 2, "explanation": "Rainbow table attacks use pre-computed hash tables to quickly reverse hash functions and crack passwords."}, {"id": "D2-Q045", "domain": 2, "question": "What is clickjacking?", "options": ["Stealing clicks", "Tricking users into clicking hidden elements", "Recording clicks", "Preventing clicks"], "correct": 1, "explanation": "Clickjacking overlays transparent elements over legitimate content, tricking users into clicking malicious links."}, {"id": "D2-Q046", "domain": 2, "question": "Which attack exploits XML parsers?", "options": ["SQL injection", "XML external entity (XXE)", "XSS", "LDAP injection"], "correct": 1, "explanation": "XXE attacks exploit vulnerable XML parsers to access local files or execute remote requests."}, {"id": "D2-Q047", "domain": 2, "question": "What is pass-the-hash?", "options": ["Sharing hashes", "Using captured hashes for authentication", "Encrypting passwords", "Generating hashes"], "correct": 1, "explanation": "Pass-the-hash attacks use captured password hashes to authenticate without cracking the actual password."}, {"id": "D2-Q048", "domain": 2, "question": "Which vulnerability allows including malicious files?", "options": ["File inclusion", "Directory traversal", "SQL injection", "Command injection"], "correct": 0, "explanation": "File inclusion vulnerabilities allow attackers to include and execute malicious files from local or remote sources."}, {"id": "D2-Q049", "domain": 2, "question": "What is an exploit kit?", "options": ["Development tools", "Automated framework delivering exploits", "Testing tools", "Patching tools"], "correct": 1, "explanation": "Exploit kits are automated tools that scan for vulnerabilities and deploy appropriate exploits."}, {"id": "D2-Q050", "domain": 2, "question": "Which attack targets high-profile individuals?", "options": ["Phishing", "Spear phishing", "Whaling", "Vishing"], "correct": 2, "explanation": "Whaling specifically targets high-profile individuals like executives with customized phishing attacks."}, {"id": "D3-Q001", "domain": 3, "question": "What is the primary purpose of network segmentation?", "options": ["To increase network speed", "To isolate network sections and contain security breaches", "To reduce hardware costs", "To simplify network management"], "correct": 1, "explanation": "Network segmentation divides networks into isolated sections to contain breaches, limit lateral movement, and improve security."}, {"id": "D3-Q002", "domain": 3, "question": "Which device filters traffic between network segments based on rules?", "options": ["Router", "Switch", "Firewall", "Hub"], "correct": 2, "explanation": "Firewalls filter network traffic based on defined security rules, controlling what traffic can pass between network segments."}, {"id": "D3-Q003", "domain": 3, "question": "What is the purpose of a DMZ (Demilitarized Zone)?", "options": ["To provide wireless access", "To isolate public-facing services from internal networks", "To store military data", "To increase internet speed"], "correct": 1, "explanation": "A DMZ is a network segment that isolates public-facing services from the internal network, adding an extra security layer."}, {"id": "D3-Q004", "domain": 3, "question": "Which architecture model assumes no trust by default, even for internal traffic?", "options": ["Perimeter security", "Zero trust", "Defense in depth", "Network segmentation"], "correct": 1, "explanation": "Zero trust architecture operates on \'never trust, always verify,\' requiring authentication and authorization for all access regardless of location."}, {"id": "D3-Q005", "domain": 3, "question": "What does a proxy server do?", "options": ["Stores backup data", "Acts as intermediary between clients and servers", "Encrypts network traffic", "Monitors physical security"], "correct": 1, "explanation": "A proxy server acts as an intermediary between clients and servers, forwarding requests and responses while potentially filtering or caching content."}, {"id": "D3-Q006", "domain": 3, "question": "Which security control inspects traffic at the application layer?", "options": ["Packet filter firewall", "Network firewall", "Web application firewall (WAF)", "Circuit-level gateway"], "correct": 2, "explanation": "WAFs operate at the application layer, inspecting HTTP/HTTPS traffic to protect web applications from attacks like SQL injection and XSS."}, {"id": "D3-Q007", "domain": 3, "question": "What is the primary function of a VPN?", "options": ["To increase network speed", "To create secure encrypted tunnels over public networks", "To filter spam emails", "To backup data"], "correct": 1, "explanation": "VPNs create encrypted tunnels over public networks, providing secure remote access and protecting data confidentiality."}, {"id": "D3-Q008", "domain": 3, "question": "Which technology creates isolated networks on a single physical infrastructure?", "options": ["Subnetting", "VLAN", "NAT", "VPN"], "correct": 1, "explanation": "VLANs (Virtual Local Area Networks) create logically separated networks on the same physical infrastructure for improved security and management."}, {"id": "D3-Q009", "domain": 3, "question": "What is the purpose of Network Access Control (NAC)?", "options": ["To control internet bandwidth", "To enforce security policies before devices access the network", "To provide wireless connectivity", "To filter email traffic"], "correct": 1, "explanation": "NAC enforces security policies by verifying device compliance before granting network access, ensuring only authorized and compliant devices connect."}, {"id": "D3-Q010", "domain": 3, "question": "Which protocol provides secure remote access to network devices?", "options": ["Telnet", "SSH", "FTP", "HTTP"], "correct": 1, "explanation": "SSH (Secure Shell) provides encrypted remote access to network devices, replacing insecure protocols like Telnet."}, {"id": "D3-Q011", "domain": 3, "question": "What is an air gap?", "options": ["A physical separation between networks with no connection", "A gap in firewall rules", "Space between servers", "A wireless network range"], "correct": 0, "explanation": "An air gap is physical isolation between networks with no direct connection, providing the highest level of network separation."}, {"id": "D3-Q012", "domain": 3, "question": "Which device aggregates logs from multiple sources for analysis?", "options": ["Firewall", "IDS", "SIEM", "Router"], "correct": 2, "explanation": "SIEM (Security Information and Event Management) systems collect, aggregate, and analyze logs from multiple sources for security monitoring."}, {"id": "D3-Q013", "domain": 3, "question": "What is the difference between IDS and IPS?", "options": ["IDS detects threats, IPS can block them", "IPS detects threats, IDS blocks them", "They are the same thing", "IDS is hardware, IPS is software"], "correct": 0, "explanation": "IDS (Intrusion Detection System) alerts on threats, while IPS (Intrusion Prevention System) can actively block malicious traffic."}, {"id": "D3-Q014", "domain": 3, "question": "Which architecture distributes resources across multiple locations for availability?", "options": ["Centralized", "Decentralized", "Distributed", "Hybrid"], "correct": 2, "explanation": "Distributed architecture spreads resources across multiple locations to improve availability, performance, and resilience."}, {"id": "D3-Q015", "domain": 3, "question": "What is micro-segmentation?", "options": ["Dividing small networks", "Granular security policies for individual workloads", "Using small network cables", "Segmenting microservices"], "correct": 1, "explanation": "Micro-segmentation applies granular security policies to individual workloads or applications, limiting lateral movement in compromised networks."}, {"id": "D3-Q016", "domain": 3, "question": "Which cloud service model provides virtualized computing resources?", "options": ["SaaS", "PaaS", "IaaS", "DaaS"], "correct": 2, "explanation": "IaaS (Infrastructure as a Service) provides virtualized computing resources like servers, storage, and networking over the internet."}, {"id": "D3-Q017", "domain": 3, "question": "What is the primary security benefit of containerization?", "options": ["Faster deployment", "Application isolation", "Reduced costs", "Better performance"], "correct": 1, "explanation": "Containerization isolates applications in separate environments, limiting the impact if one container is compromised."}, {"id": "D3-Q018", "domain": 3, "question": "Which protocol secures email transmission?", "options": ["SMTP", "POP3", "TLS/SSL", "IMAP"], "correct": 2, "explanation": "TLS/SSL protocols encrypt email transmission, protecting confidentiality when used with SMTP, POP3, or IMAP."}, {"id": "D3-Q019", "domain": 3, "question": "What is a jump server (bastion host)?", "options": ["A backup server", "A hardened system providing secure access to other systems", "A server that increases network speed", "A virtualization host"], "correct": 1, "explanation": "A jump server is a hardened, monitored system that provides controlled access to devices in different security zones."}, {"id": "D3-Q020", "domain": 3, "question": "Which technology allows multiple operating systems on one physical host?", "options": ["Containerization", "Virtualization", "Cloud computing", "Clustering"], "correct": 1, "explanation": "Virtualization allows multiple virtual machines with different operating systems to run on a single physical host."}, {"id": "D3-Q021", "domain": 3, "question": "What is the purpose of load balancing?", "options": ["Reduce costs", "Distribute traffic across multiple servers", "Increase storage", "Improve policies"], "correct": 1, "explanation": "Load balancing distributes network traffic across multiple servers for optimal resource use and availability."}, {"id": "D3-Q022", "domain": 3, "question": "Which principle limits access based on business needs?", "options": ["Defense in depth", "Least privilege", "Separation of duties", "Zero trust"], "correct": 1, "explanation": "Least privilege ensures users have only minimum access necessary for their job functions."}, {"id": "D3-Q023", "domain": 3, "question": "What is Software-Defined Networking (SDN)?", "options": ["Hardware defined by software", "Centralized control through software", "Design software", "Monitoring software"], "correct": 1, "explanation": "SDN separates control plane from data plane, allowing centralized network management through software."}, {"id": "D3-Q024", "domain": 3, "question": "Which component manages authentication and authorization?", "options": ["Firewall", "Identity and Access Management (IAM)", "VPN", "SIEM"], "correct": 1, "explanation": "IAM systems manage digital identities and control access through authentication and authorization."}, {"id": "D3-Q025", "domain": 3, "question": "What is the primary purpose of network redundancy?", "options": ["Increase security", "Ensure availability if primary fails", "Improve performance", "Reduce costs"], "correct": 1, "explanation": "Network redundancy provides backup paths and components to maintain availability during failures."}, {"id": "D3-Q026", "domain": 3, "question": "Which protocol is used for secure web browsing?", "options": ["HTTP", "HTTPS", "FTP", "Telnet"], "correct": 1, "explanation": "HTTPS uses TLS/SSL to encrypt HTTP traffic, providing secure communication for web browsing."}, {"id": "D3-Q027", "domain": 3, "question": "What is NAT?", "options": ["Name translation", "Mapping private IPs to public IPs", "Encrypting traffic", "Segmenting networks"], "correct": 1, "explanation": "NAT translates private IP addresses to public IPs, conserving addresses and hiding internal structure."}, {"id": "D3-Q028", "domain": 3, "question": "Which cloud model is used exclusively by one organization?", "options": ["Public cloud", "Private cloud", "Hybrid cloud", "Community cloud"], "correct": 1, "explanation": "Private cloud infrastructure is dedicated to a single organization for greater control."}, {"id": "D3-Q029", "domain": 3, "question": "What is East-West traffic?", "options": ["Client to server", "Server to server within datacenter", "Internet-bound", "Backup traffic"], "correct": 1, "explanation": "East-West traffic flows between servers within a data center, not entering/leaving it."}, {"id": "D3-Q030", "domain": 3, "question": "Which control monitors DNS queries?", "options": ["DNS firewall", "Web proxy", "Email gateway", "VPN"], "correct": 0, "explanation": "DNS firewalls filter DNS queries to block access to malicious domains."}, {"id": "D3-Q031", "domain": 3, "question": "What is the purpose of API security?", "options": ["Increase speed", "Protect APIs from attacks", "Develop APIs", "Document APIs"], "correct": 1, "explanation": "API security protects interfaces through authentication, authorization, encryption, and validation."}, {"id": "D3-Q032", "domain": 3, "question": "Which technology provides secure wireless access?", "options": ["WEP", "WPA3", "MAC filtering", "SSID hiding"], "correct": 1, "explanation": "WPA3 provides the strongest security for wireless networks with improved encryption."}, {"id": "D3-Q033", "domain": 3, "question": "What is a security zone?", "options": ["Physical area", "Network segment with specific security requirements", "Time zone", "Restricted area"], "correct": 1, "explanation": "Security zones are network segments with similar security requirements separated by controls."}, {"id": "D3-Q034", "domain": 3, "question": "Which architecture uses multiple cloud providers?", "options": ["Single cloud", "Multi-cloud", "Hybrid cloud", "Private cloud"], "correct": 1, "explanation": "Multi-cloud architecture uses services from multiple providers to avoid vendor lock-in."}, {"id": "D3-Q035", "domain": 3, "question": "What is DLP?", "options": ["Preventing hardware failures", "Detecting and preventing unauthorized data transmission", "Preventing corruption", "Preventing crashes"], "correct": 1, "explanation": "DLP systems monitor, detect, and prevent unauthorized transmission of sensitive data."}, {"id": "D3-Q036", "domain": 3, "question": "Which protocol provides time synchronization?", "options": ["HTTP", "NTP", "SNMP", "DNS"], "correct": 1, "explanation": "NTP (Network Time Protocol) synchronizes clocks across network devices."}, {"id": "D3-Q037", "domain": 3, "question": "What is serverless architecture?", "options": ["No servers", "Cloud provider manages infrastructure", "Client-side only", "Peer-to-peer"], "correct": 1, "explanation": "Serverless allows code execution without managing servers, with provider handling infrastructure."}, {"id": "D3-Q038", "domain": 3, "question": "Which control protects against email threats?", "options": ["Firewall", "Email gateway", "VPN", "IDS"], "correct": 1, "explanation": "Email gateways filter email for spam, malware, phishing, and data loss prevention."}, {"id": "D3-Q039", "domain": 3, "question": "What does NAC enforce?", "options": ["Internet speed", "Security policy compliance before access", "Cable management", "Wireless signals"], "correct": 1, "explanation": "NAC ensures devices meet security requirements before accessing the network."}, {"id": "D3-Q040", "domain": 3, "question": "Which architecture separates presentation, application, and data?", "options": ["Monolithic", "Three-tier", "Peer-to-peer", "Client-server"], "correct": 1, "explanation": "Three-tier architecture separates layers for better security, scalability, and maintenance."}, {"id": "D3-Q041", "domain": 3, "question": "What is a screened subnet?", "options": ["Wireless network", "DMZ with firewalls on both sides", "Internal network", "Guest network"], "correct": 1, "explanation": "A screened subnet (DMZ) has firewalls between internet and DMZ, and between DMZ and internal network."}, {"id": "D3-Q042", "domain": 3, "question": "Which security model uses security labels?", "options": ["DAC", "MAC", "RBAC", "ABAC"], "correct": 1, "explanation": "MAC (Mandatory Access Control) uses security labels to enforce access based on classification levels."}, {"id": "D3-Q043", "domain": 3, "question": "What is network access control list (NACL)?", "options": ["User list", "Firewall rules for subnets", "Router configuration", "Switch settings"], "correct": 1, "explanation": "NACLs are stateless firewall rules that control traffic at the subnet level in networks."}, {"id": "D3-Q044", "domain": 3, "question": "Which protocol secures file transfers?", "options": ["FTP", "SFTP", "HTTP", "Telnet"], "correct": 1, "explanation": "SFTP (SSH File Transfer Protocol) provides secure encrypted file transfers."}, {"id": "D3-Q045", "domain": 3, "question": "What is infrastructure as code (IaC)?", "options": ["Coding infrastructure", "Managing infrastructure through code", "Infrastructure documentation", "Hardware programming"], "correct": 1, "explanation": "IaC manages and provisions infrastructure through machine-readable definition files."}, {"id": "D3-Q046", "domain": 3, "question": "Which technology isolates network traffic at layer 2?", "options": ["Subnetting", "VLAN", "VPN", "Firewall"], "correct": 1, "explanation": "VLANs logically segment networks at layer 2 for isolation and security."}, {"id": "D3-Q047", "domain": 3, "question": "What is a next-generation firewall (NGFW)?", "options": ["Newer firewall hardware", "Firewall with application awareness and IPS", "Faster firewall", "Cloud firewall"], "correct": 1, "explanation": "NGFWs combine traditional firewall with application-level inspection, IPS, and threat intelligence."}, {"id": "D3-Q048", "domain": 3, "question": "Which architecture principle separates management from data traffic?", "options": ["Segmentation", "Out-of-band management", "Virtualization", "Load balancing"], "correct": 1, "explanation": "Out-of-band management uses separate network for management traffic, improving security."}, {"id": "D3-Q049", "domain": 3, "question": "What is SD-WAN?", "options": ["Software-defined wide area network", "Secure data WAN", "Standard WAN", "Static WAN"], "correct": 0, "explanation": "SD-WAN uses software to manage and optimize WAN connections across multiple sites."}, {"id": "D3-Q050", "domain": 3, "question": "Which access control model uses policies based on attributes?", "options": ["DAC", "MAC", "RBAC", "ABAC"], "correct": 3, "explanation": "ABAC (Attribute-Based Access Control) makes decisions based on attributes of users, resources, and environment."}, {"id": "D4-Q001", "domain": 4, "question": "What is the purpose of security monitoring?", "options": ["To increase system performance", "To detect and respond to security incidents", "To reduce network traffic", "To manage user accounts"], "correct": 1, "explanation": "Security monitoring continuously observes systems and networks to detect, analyze, and respond to security incidents and threats."}, {"id": "D4-Q002", "domain": 4, "question": "Which log type records user authentication attempts?", "options": ["System logs", "Application logs", "Security logs", "Performance logs"], "correct": 2, "explanation": "Security logs record authentication events, including successful and failed login attempts, for audit and investigation purposes."}, {"id": "D4-Q003", "domain": 4, "question": "What is the first step in incident response?", "options": ["Containment", "Eradication", "Preparation", "Recovery"], "correct": 2, "explanation": "Preparation is the first phase, involving developing plans, training staff, and establishing tools and procedures before incidents occur."}, {"id": "D4-Q004", "domain": 4, "question": "Which process involves identifying security weaknesses through controlled testing?", "options": ["Patch management", "Vulnerability assessment", "Change management", "Configuration management"], "correct": 1, "explanation": "Vulnerability assessment systematically identifies, quantifies, and prioritizes security weaknesses in systems and networks."}, {"id": "D4-Q005", "domain": 4, "question": "What is the purpose of a security baseline?", "options": ["To set minimum security requirements for systems", "To measure network performance", "To calculate security budgets", "To determine staffing needs"], "correct": 0, "explanation": "A security baseline establishes minimum security settings and configurations that all systems must meet."}, {"id": "D4-Q006", "domain": 4, "question": "Which type of backup copies only changed data since the last full backup?", "options": ["Full backup", "Incremental backup", "Differential backup", "Snapshot backup"], "correct": 2, "explanation": "Differential backups copy all data changed since the last full backup, requiring only the full and latest differential for restoration."}, {"id": "D4-Q007", "domain": 4, "question": "What is the primary purpose of patch management?", "options": ["To improve system performance", "To update software and fix security vulnerabilities", "To add new features", "To reduce storage usage"], "correct": 1, "explanation": "Patch management ensures systems are updated with security patches to fix vulnerabilities and maintain security posture."}, {"id": "D4-Q008", "domain": 4, "question": "Which incident response phase involves removing the threat from systems?", "options": ["Identification", "Containment", "Eradication", "Recovery"], "correct": 2, "explanation": "Eradication removes the threat, malware, or unauthorized access from affected systems after containment."}, {"id": "D4-Q009", "domain": 4, "question": "What is forensic imaging?", "options": ["Taking photos of crime scenes", "Creating exact copies of storage media for investigation", "Enhancing security camera footage", "Drawing network diagrams"], "correct": 1, "explanation": "Forensic imaging creates bit-by-bit copies of storage media to preserve evidence without altering the original."}, {"id": "D4-Q010", "domain": 4, "question": "Which metric measures how long a service can be unavailable?", "options": ["MTTR", "MTBF", "RTO", "RPO"], "correct": 2, "explanation": "RTO (Recovery Time Objective) defines the maximum acceptable time a service can be down after an incident."}, {"id": "D4-Q011", "domain": 4, "question": "What is the purpose of hardening a system?", "options": ["To make it physically stronger", "To reduce attack surface by removing unnecessary features", "To increase processing power", "To improve user experience"], "correct": 1, "explanation": "Hardening reduces the attack surface by disabling unnecessary services, removing unused software, and applying security configurations."}, {"id": "D4-Q012", "domain": 4, "question": "Which process ensures changes don\'t negatively impact security?", "options": ["Patch management", "Change management", "Asset management", "Configuration management"], "correct": 1, "explanation": "Change management controls and documents system changes to ensure they\'re properly reviewed, tested, and don\'t introduce vulnerabilities."}, {"id": "D4-Q013", "domain": 4, "question": "What is a Security Operations Center (SOC)?", "options": ["A physical security facility", "A team that monitors and responds to security incidents", "A type of firewall", "A compliance framework"], "correct": 1, "explanation": "A SOC is a centralized unit that monitors, detects, investigates, and responds to security incidents 24/7."}, {"id": "D4-Q014", "domain": 4, "question": "Which backup type copies only data changed since the last backup of any type?", "options": ["Full backup", "Incremental backup", "Differential backup", "Mirror backup"], "correct": 1, "explanation": "Incremental backups copy only data changed since the last backup of any type, requiring all increments for full restoration."}, {"id": "D4-Q015", "domain": 4, "question": "What is the chain of custody?", "options": ["Management hierarchy", "Documentation of evidence handling", "Security clearance levels", "Network topology"], "correct": 1, "explanation": "Chain of custody documents who handled evidence, when, and how to maintain its integrity for legal proceedings."}, {"id": "D4-Q016", "domain": 4, "question": "Which metric measures average time between system failures?", "options": ["MTTR", "MTBF", "RTO", "RPO"], "correct": 1, "explanation": "MTBF (Mean Time Between Failures) measures the average time a system operates before experiencing a failure."}, {"id": "D4-Q017", "domain": 4, "question": "What is the purpose of vulnerability scanning?", "options": ["To exploit vulnerabilities", "To identify potential security weaknesses", "To improve system performance", "To reduce costs"], "correct": 1, "explanation": "Vulnerability scanning automatically identifies known security weaknesses in systems, applications, and networks."}, {"id": "D4-Q018", "domain": 4, "question": "Which incident response phase involves restoring normal operations?", "options": ["Containment", "Eradication", "Recovery", "Lessons learned"], "correct": 2, "explanation": "Recovery involves restoring systems to normal operations and verifying they\'re functioning properly and securely."}, {"id": "D4-Q019", "domain": 4, "question": "What is penetration testing?", "options": ["Testing network cable quality", "Simulating attacks to identify vulnerabilities", "Testing user passwords", "Testing backup procedures"], "correct": 1, "explanation": "Penetration testing simulates real-world attacks to identify vulnerabilities and assess security effectiveness."}, {"id": "D4-Q020", "domain": 4, "question": "Which log aggregation method collects logs from multiple sources?", "options": ["Local logging", "Centralized logging", "Distributed logging", "Cloud logging"], "correct": 1, "explanation": "Centralized logging collects logs from multiple sources into a single repository for analysis, correlation, and retention."}, {"id": "D4-Q021", "domain": 4, "question": "What is configuration management?", "options": ["Managing cables", "Maintaining consistent system configurations", "User accounts", "Licenses"], "correct": 1, "explanation": "Configuration management maintains consistent, documented system configurations and tracks changes."}, {"id": "D4-Q022", "domain": 4, "question": "Which metric defines maximum data loss?", "options": ["MTTR", "MTBF", "RTO", "RPO"], "correct": 3, "explanation": "RPO (Recovery Point Objective) defines maximum acceptable data loss measured in time."}, {"id": "D4-Q023", "domain": 4, "question": "What is security orchestration?", "options": ["Playing music", "Automating and coordinating security tools", "Organizing staff", "Prioritizing vulnerabilities"], "correct": 1, "explanation": "Security orchestration automates and coordinates multiple security tools and processes."}, {"id": "D4-Q024", "domain": 4, "question": "Which evidence type includes electronic data?", "options": ["Physical", "Digital", "Documentary", "Testimonial"], "correct": 1, "explanation": "Digital evidence includes data stored or transmitted electronically."}, {"id": "D4-Q025", "domain": 4, "question": "What is threat hunting?", "options": ["Hunting employees", "Proactively searching for threats", "Removing threats", "Documenting threats"], "correct": 1, "explanation": "Threat hunting proactively searches for threats that evaded existing security controls."}, {"id": "D4-Q026", "domain": 4, "question": "Which process tracks organizational assets?", "options": ["Change management", "Asset management", "Configuration management", "Patch management"], "correct": 1, "explanation": "Asset management tracks and maintains inventory of all organizational hardware, software, and data."}, {"id": "D4-Q027", "domain": 4, "question": "What is security automation?", "options": ["Eliminating staff", "Performing tasks without manual intervention", "Auto-hacking", "Reducing budgets"], "correct": 1, "explanation": "Security automation handles repetitive tasks like log analysis and alert triage automatically."}, {"id": "D4-Q028", "domain": 4, "question": "Which phase determines if an incident occurred?", "options": ["Preparation", "Identification", "Containment", "Recovery"], "correct": 1, "explanation": "Identification determines whether a security incident occurred and assesses its scope."}, {"id": "D4-Q029", "domain": 4, "question": "What is volatility in forensics?", "options": ["How dangerous evidence is", "How quickly data can be lost", "How much data exists", "How encrypted data is"], "correct": 1, "explanation": "Volatility refers to how quickly data can be lost, requiring collection of most volatile data first."}, {"id": "D4-Q030", "domain": 4, "question": "Which metric measures average repair time?", "options": ["MTTR", "MTBF", "RTO", "RPO"], "correct": 0, "explanation": "MTTR (Mean Time To Repair) measures average time to repair and restore after failure."}, {"id": "D4-Q031", "domain": 4, "question": "What is a security playbook?", "options": ["Children\'s book", "Documented procedures for incidents", "Training manual", "Compliance checklist"], "correct": 1, "explanation": "Security playbooks contain documented procedures for responding to specific incident types."}, {"id": "D4-Q032", "domain": 4, "question": "Which process safely disposes of data?", "options": ["Encryption", "Sanitization", "Backup", "Archiving"], "correct": 1, "explanation": "Sanitization permanently removes data through overwriting, degaussing, or destruction."}, {"id": "D4-Q033", "domain": 4, "question": "What establishes minimum security configurations?", "options": ["Security baselines", "Network speed", "Costs", "Training"], "correct": 0, "explanation": "Security baselines establish minimum configuration standards all systems must meet."}, {"id": "D4-Q034", "domain": 4, "question": "Which strategy isolates affected systems?", "options": ["Eradication", "Segmentation", "Recovery", "Identification"], "correct": 1, "explanation": "Segmentation isolates compromised systems to prevent threat spread during incidents."}, {"id": "D4-Q035", "domain": 4, "question": "What is order of volatility?", "options": ["Most volatile to least", "Least to most", "Largest to smallest", "Oldest to newest"], "correct": 0, "explanation": "Evidence collection follows most volatile (RAM) to least volatile (hard drives) order."}, {"id": "D4-Q036", "domain": 4, "question": "Which testing has NO knowledge of target?", "options": ["White box", "Black box", "Gray box", "Clear box"], "correct": 1, "explanation": "Black box testing simulates external attacker with no prior target knowledge."}, {"id": "D4-Q037", "domain": 4, "question": "What is security posture?", "options": ["Sitting position", "Overall security strength and readiness", "Physical stance", "Policy documentation"], "correct": 1, "explanation": "Security posture represents overall security strength, controls, and readiness to prevent/respond."}, {"id": "D4-Q038", "domain": 4, "question": "Which logs are most useful for incidents?", "options": ["Performance", "Application", "Security", "System"], "correct": 2, "explanation": "Security logs record authentication and security events critical for investigation."}, {"id": "D4-Q039", "domain": 4, "question": "What is tabletop exercise?", "options": ["Physical testing", "Discussion-based scenario walkthrough", "New hire training", "Backup testing"], "correct": 1, "explanation": "Tabletop exercises discuss incident scenarios to test response procedures."}, {"id": "D4-Q040", "domain": 4, "question": "Which technique recovers deleted files?", "options": ["File recovery", "Data carving", "Steganography", "Encryption"], "correct": 1, "explanation": "Data carving recovers files from unallocated space by identifying file signatures."}, {"id": "D4-Q041", "domain": 4, "question": "What documents identified risks?", "options": ["Risk register", "Device list", "Control list", "Audit log"], "correct": 0, "explanation": "Risk register documents identified risks, likelihood, impact, and mitigation strategies."}, {"id": "D4-Q042", "domain": 4, "question": "Which backup uses incrementals with periodic fulls?", "options": ["Full only", "Differential", "Incremental", "Grandfather-father-son"], "correct": 3, "explanation": "Grandfather-father-son combines full backups with incrementals for long-term retention."}, {"id": "D4-Q043", "domain": 4, "question": "What is security information sharing?", "options": ["Sharing passwords", "Exchanging threat intelligence", "Publishing policies", "Training"], "correct": 1, "explanation": "Security information sharing exchanges threat intelligence and best practices between organizations."}, {"id": "D4-Q044", "domain": 4, "question": "Which metric indicates availability?", "options": ["Uptime percentage", "Response time", "Throughput", "Bandwidth"], "correct": 0, "explanation": "Uptime percentage measures proportion of time systems are operational."}, {"id": "D4-Q045", "domain": 4, "question": "What is quarantine in IR?", "options": ["Deleting systems", "Isolating compromised systems", "Improving performance", "Backing up"], "correct": 1, "explanation": "Quarantine isolates compromised systems to prevent spread while allowing analysis."}, {"id": "D4-Q046", "domain": 4, "question": "Which testing has full knowledge?", "options": ["Black box", "White box", "Gray box", "Blind testing"], "correct": 1, "explanation": "White box testing has complete knowledge including source code and architecture."}, {"id": "D4-Q047", "domain": 4, "question": "What is security alerting?", "options": ["Training staff", "Automated notifications of events", "Physical alarms", "Posters"], "correct": 1, "explanation": "Security alerting automatically notifies personnel of potential incidents or violations."}, {"id": "D4-Q048", "domain": 4, "question": "Which retention factor is most important?", "options": ["Storage costs", "Legal requirements", "Performance", "Preferences"], "correct": 1, "explanation": "Legal and regulatory requirements dictate minimum retention periods for compliance."}, {"id": "D4-Q049", "domain": 4, "question": "What measures program effectiveness?", "options": ["Punishing employees", "Security metrics", "Reducing budgets", "Creating policies"], "correct": 1, "explanation": "Security metrics quantitatively measure security program effectiveness and trends."}, {"id": "D4-Q050", "domain": 4, "question": "Which phase reviews incidents?", "options": ["Preparation", "Identification", "Recovery", "Lessons learned"], "correct": 3, "explanation": "Lessons learned reviews incidents and responses to identify improvements."}, {"id": "D5-Q001", "domain": 5, "question": "What is the primary purpose of a security policy?", "options": ["To document security incidents", "To establish high-level security objectives and principles", "To provide step-by-step instructions", "To list security tools"], "correct": 1, "explanation": "Security policies establish high-level security objectives, principles, and management direction for the organization."}, {"id": "D5-Q002", "domain": 5, "question": "Which document provides detailed step-by-step instructions?", "options": ["Policy", "Standard", "Procedure", "Guideline"], "correct": 2, "explanation": "Procedures provide detailed, step-by-step instructions for completing specific security-related tasks or processes."}, {"id": "D5-Q003", "domain": 5, "question": "What is risk appetite?", "options": ["The amount of food security staff consume", "The level of risk an organization is willing to accept", "The desire to take risks", "The cost of security controls"], "correct": 1, "explanation": "Risk appetite is the amount and type of risk an organization is willing to accept in pursuit of business objectives."}, {"id": "D5-Q004", "domain": 5, "question": "Which framework provides security controls for federal information systems?", "options": ["ISO 27001", "NIST SP 800-53", "PCI DSS", "COBIT"], "correct": 1, "explanation": "NIST SP 800-53 provides comprehensive security and privacy controls for federal information systems and organizations."}, {"id": "D5-Q005", "domain": 5, "question": "What is the purpose of vendor risk management?", "options": ["To eliminate all vendors", "To assess and mitigate risks from third-party vendors", "To negotiate lower prices", "To manage vendor contracts"], "correct": 1, "explanation": "Vendor risk management assesses, monitors, and mitigates security risks introduced by third-party vendors and service providers."}, {"id": "D5-Q006", "domain": 5, "question": "Which compliance framework applies to payment card data?", "options": ["HIPAA", "GDPR", "PCI DSS", "SOX"], "correct": 2, "explanation": "PCI DSS (Payment Card Industry Data Security Standard) provides security requirements for organizations handling payment card data."}, {"id": "D5-Q007", "domain": 5, "question": "What is a Business Impact Analysis (BIA)?", "options": ["Analysis of business profits", "Assessment of critical business functions and disruption impacts", "Market research analysis", "Employee performance review"], "correct": 1, "explanation": "BIA identifies critical business functions, their dependencies, and potential impacts of disruptions to prioritize recovery efforts."}, {"id": "D5-Q008", "domain": 5, "question": "Which document defines mandatory security requirements?", "options": ["Policy", "Standard", "Procedure", "Guideline"], "correct": 1, "explanation": "Standards define mandatory, specific security requirements and acceptable configurations that must be followed."}, {"id": "D5-Q009", "domain": 5, "question": "What is the purpose of security awareness training?", "options": ["To teach advanced hacking skills", "To educate employees about security threats and best practices", "To replace technical controls", "To punish security violations"], "correct": 1, "explanation": "Security awareness training educates employees about security threats, policies, and best practices to reduce human-related risks."}, {"id": "D5-Q010", "domain": 5, "question": "What is qualitative risk assessment?", "options": ["Risk assessment using precise numbers", "Risk assessment using descriptive categories like high/medium/low", "Assessment of software quality", "Assessment of employee qualifications"], "correct": 1, "explanation": "Qualitative risk assessment uses descriptive categories (high/medium/low) rather than numerical values to evaluate risks."}, {"id": "D5-Q011", "domain": 5, "question": "Which regulation protects personal health information in the US?", "options": ["PCI DSS", "HIPAA", "GDPR", "FERPA"], "correct": 1, "explanation": "HIPAA (Health Insurance Portability and Accountability Act) establishes requirements for protecting personal health information in the US."}, {"id": "D5-Q012", "domain": 5, "question": "What is quantitative risk assessment?", "options": ["Risk assessment using quantity of risks", "Risk assessment using numerical values and financial impact", "Assessment of product quantity", "Assessment of user numbers"], "correct": 1, "explanation": "Quantitative risk assessment uses numerical values and calculations to determine financial impact and probability of risks."}, {"id": "D5-Q013", "domain": 5, "question": "What is the purpose of a data classification policy?", "options": ["To organize files alphabetically", "To categorize data based on sensitivity and apply appropriate protections", "To classify employees", "To sort email"], "correct": 1, "explanation": "Data classification policies categorize data based on sensitivity and define appropriate handling, storage, and protection requirements."}, {"id": "D5-Q014", "domain": 5, "question": "Which principle requires obtaining individual consent before data collection?", "options": ["Data minimization", "Consent and choice", "Purpose limitation", "Data integrity"], "correct": 1, "explanation": "Consent and choice principles require organizations to obtain informed consent before collecting or processing personal data."}, {"id": "D5-Q015", "domain": 5, "question": "What is a Business Continuity Plan (BCP)?", "options": ["A marketing strategy", "Documentation of processes to maintain operations during disruptions", "A financial plan", "An employee handbook"], "correct": 1, "explanation": "BCP documents strategies and procedures to maintain or quickly resume critical business functions during and after disruptions."}, {"id": "D5-Q016", "domain": 5, "question": "What is the difference between BCP and DRP?", "options": ["No difference", "BCP focuses on business operations, DRP focuses on IT systems recovery", "DRP is for disasters only", "BCP is for small businesses"], "correct": 1, "explanation": "BCP maintains overall business operations during disruptions, while DRP specifically focuses on IT systems and data recovery."}, {"id": "D5-Q017", "domain": 5, "question": "Which framework provides IT governance and management guidance?", "options": ["PCI DSS", "COBIT", "HIPAA", "SOX"], "correct": 1, "explanation": "COBIT (Control Objectives for Information and Related Technologies) provides a framework for IT governance and management."}, {"id": "D5-Q018", "domain": 5, "question": "What is the purpose of security governance?", "options": ["To govern security staff behavior", "To establish strategic direction and oversight of security programs", "To write security code", "To manage security tools"], "correct": 1, "explanation": "Security governance establishes strategic direction, oversight, and accountability for security programs aligned with business objectives."}, {"id": "D5-Q019", "domain": 5, "question": "Which regulation protects educational records in the US?", "options": ["HIPAA", "GDPR", "FERPA", "SOX"], "correct": 2, "explanation": "FERPA (Family Educational Rights and Privacy Act) protects the privacy of student education records in the United States."}, {"id": "D5-Q020", "domain": 5, "question": "What is residual risk?", "options": ["Risk from residue or waste", "Risk remaining after controls are implemented", "Risk in residential areas", "Risk that residents face"], "correct": 1, "explanation": "Residual risk is the risk that remains after security controls and mitigation strategies have been implemented."}, {"id": "D5-Q021", "domain": 5, "question": "What is the purpose of security metrics?", "options": ["To measure physical dimensions", "To quantify and track security program effectiveness", "To count security staff", "To measure network speed"], "correct": 1, "explanation": "Security metrics quantify security program effectiveness, helping measure progress, identify trends, and support decision-making."}, {"id": "D5-Q022", "domain": 5, "question": "Which privacy principle states data should only be kept as long as necessary?", "options": ["Data minimization", "Purpose limitation", "Storage limitation", "Consent"], "correct": 2, "explanation": "Storage limitation requires organizations to retain personal data only as long as necessary for the specified purpose."}, {"id": "D5-Q023", "domain": 5, "question": "What is acceptable use policy (AUP)?", "options": ["Policy for accepting users", "Policy defining appropriate use of organizational resources", "Policy for user acceptance testing", "Policy for accepting deliveries"], "correct": 1, "explanation": "AUP defines appropriate and inappropriate uses of organizational IT resources, systems, and networks by users."}, {"id": "D5-Q024", "domain": 5, "question": "What is third-party risk assessment?", "options": ["Risk of being assessed by third parties", "Evaluating security risks from vendors and partners", "Assessment by external auditors", "Risk of third-party software"], "correct": 1, "explanation": "Third-party risk assessment evaluates security risks from external vendors, partners, and service providers before engagement."}, {"id": "D5-Q025", "domain": 5, "question": "Which framework provides international information security standards?", "options": ["NIST", "ISO/IEC 27001", "PCI DSS", "COBIT"], "correct": 1, "explanation": "ISO/IEC 27001 provides international standards for information security management systems (ISMS)."}, {"id": "D5-Q026", "domain": 5, "question": "What is privacy by design?", "options": ["Designing private areas", "Incorporating privacy considerations from the beginning of system design", "Designing privacy policies", "Graphic design for privacy notices"], "correct": 1, "explanation": "Privacy by design incorporates privacy and data protection considerations throughout the entire system development lifecycle."}, {"id": "D5-Q027", "domain": 5, "question": "What is the purpose of security training for developers?", "options": ["To train security staff in development", "To teach secure coding practices and security principles", "To develop training materials", "To train developers in security tools only"], "correct": 1, "explanation": "Security training for developers teaches secure coding practices, common vulnerabilities, and security principles to build secure software."}, {"id": "D5-Q028", "domain": 5, "question": "What is inherent risk?", "options": ["Risk inherited from parent companies", "Risk level before any controls are applied", "Risk that is internal", "Risk from inheritance"], "correct": 1, "explanation": "Inherent risk is the natural level of risk before any security controls or mitigation measures are implemented."}, {"id": "D5-Q029", "domain": 5, "question": "Which regulation requires financial reporting controls in the US?", "options": ["HIPAA", "SOX", "GDPR", "PCI DSS"], "correct": 1, "explanation": "SOX (Sarbanes-Oxley Act) requires publicly traded companies to implement internal controls for financial reporting and disclosure."}, {"id": "D5-Q030", "domain": 5, "question": "What is key risk indicator (KRI)?", "options": ["Risk to encryption keys", "Metric providing early warning of increasing risk", "List of important risks", "Risk indicator light"], "correct": 1, "explanation": "KRIs are metrics that provide early warning signals of increasing risk exposure in specific areas."}, {"id": "D5-Q031", "domain": 5, "question": "What is security culture?", "options": ["Cultural diversity in security teams", "Shared values and behaviors regarding security across organization", "Security awareness posters", "Security team traditions"], "correct": 1, "explanation": "Security culture represents shared security values, attitudes, and behaviors embedded throughout the organization."}, {"id": "D5-Q032", "domain": 5, "question": "Which privacy principle requires using data only for stated purposes?", "options": ["Data minimization", "Purpose limitation", "Consent", "Accountability"], "correct": 1, "explanation": "Purpose limitation requires organizations to collect and process data only for specified, explicit, and legitimate purposes."}, {"id": "D5-Q033", "domain": 5, "question": "What is a data protection impact assessment (DPIA)?", "options": ["Assessment of data backup impact", "Evaluation of privacy risks in data processing activities", "Impact of data on performance", "Assessment of data quality"], "correct": 1, "explanation": "DPIA evaluates privacy risks associated with data processing activities to identify and mitigate potential privacy impacts."}, {"id": "D5-Q034", "domain": 5, "question": "What is the role of a Data Protection Officer (DPO)?", "options": ["To protect data backups", "To oversee privacy compliance and data protection strategy", "To encrypt all data", "To manage data storage"], "correct": 1, "explanation": "DPO oversees data protection strategy, privacy compliance, and serves as a contact point for data protection authorities."}, {"id": "D5-Q035", "domain": 5, "question": "What is security posture assessment?", "options": ["Evaluating physical posture of security guards", "Comprehensive evaluation of organization\'s security status", "Assessment of sitting positions", "Security camera positioning"], "correct": 1, "explanation": "Security posture assessment comprehensively evaluates an organization\'s security status, including controls, processes, and vulnerabilities."}, {"id": "D5-Q036", "domain": 5, "question": "Which regulation applies to organizations processing EU citizens\' data?", "options": ["HIPAA", "GDPR", "SOX", "FERPA"], "correct": 1, "explanation": "GDPR (General Data Protection Regulation) applies to any organization processing personal data of EU citizens, regardless of location."}, {"id": "D5-Q037", "domain": 5, "question": "What is security baseline deviation?", "options": ["Mathematical variation in security metrics", "Systems that don\'t meet established security standards", "Deviation in security budgets", "Changes in security policies"], "correct": 1, "explanation": "Security baseline deviation occurs when systems don\'t meet established minimum security configuration standards."}, {"id": "D5-Q038", "domain": 5, "question": "What is the purpose of security compliance audits?", "options": ["To punish non-compliance", "To verify adherence to security policies and regulations", "To reduce security staff", "To eliminate security controls"], "correct": 1, "explanation": "Security compliance audits verify that organizations meet security policies, standards, and regulatory requirements."}, {"id": "D5-Q039", "domain": 5, "question": "What is risk tolerance?", "options": ["Tolerance for risk-taking behavior", "Acceptable deviation from risk appetite", "Tolerance for uncertain situations", "Employee tolerance for security measures"], "correct": 1, "explanation": "Risk tolerance is the acceptable level of variation from the risk appetite that an organization can handle."}, {"id": "D5-Q040", "domain": 5, "question": "What is the purpose of executive security reporting?", "options": ["To report executives to authorities", "To communicate security status and risks to leadership", "To secure executive offices", "To report executive expenses"], "correct": 1, "explanation": "Executive security reporting communicates security posture, risks, incidents, and program effectiveness to organizational leadership."}, {"id": "D5-Q041", "domain": 5, "question": "What is data sovereignty?", "options": ["Data ownership rights", "Data subject to laws of the country where it\'s stored", "Data independence", "Data quality standards"], "correct": 1, "explanation": "Data sovereignty means data is subject to the laws and regulations of the country where it\'s physically stored."}, {"id": "D5-Q042", "domain": 5, "question": "What is security strategy?", "options": ["Tactical security operations", "Long-term plan aligning security with business objectives", "Daily security tasks", "Security tool selection"], "correct": 1, "explanation": "Security strategy is a long-term plan that aligns security initiatives with business objectives and organizational goals."}, {"id": "D5-Q043", "domain": 5, "question": "What is the purpose of password policy?", "options": ["To make passwords difficult to remember", "To establish requirements for secure password creation and management", "To list all passwords", "To eliminate passwords"], "correct": 1, "explanation": "Password policy establishes requirements for password complexity, length, expiration, and management to ensure account security."}, {"id": "D5-Q044", "domain": 5, "question": "What is security ROI (Return on Investment)?", "options": ["Return on security tools purchased", "Value gained from security investments relative to costs", "Revenue from selling security", "Interest on security budgets"], "correct": 1, "explanation": "Security ROI measures the value and benefits gained from security investments compared to their costs."}, {"id": "D5-Q045", "domain": 5, "question": "What is the primary purpose of an incident response plan?", "options": ["To prevent all incidents", "To provide structured approach for detecting and responding to incidents", "To punish responsible parties", "To reduce security budgets"], "correct": 1, "explanation": "An incident response plan provides a structured, documented approach for detecting, responding to, and recovering from security incidents."}, {"id": "D5-Q046", "domain": 5, "question": "What is data minimization?", "options": ["Making data files smaller", "Collecting only data necessary for specific purposes", "Minimizing data backups", "Using minimum storage"], "correct": 1, "explanation": "Data minimization requires organizations to collect and retain only the minimum amount of personal data necessary for specified purposes."}, {"id": "D5-Q047", "domain": 5, "question": "What is the purpose of security steering committee?", "options": ["To steer security vehicles", "To provide governance and strategic direction for security program", "To manage daily security operations", "To hire security staff"], "correct": 1, "explanation": "A security steering committee provides governance, strategic direction, and oversight for the organization\'s security program."}, {"id": "D5-Q048", "domain": 5, "question": "What is privacy impact assessment (PIA)?", "options": ["Assessment of privacy policy effectiveness", "Evaluation of privacy risks in systems or programs", "Impact of privacy laws on business", "Assessment of private networks"], "correct": 1, "explanation": "PIA evaluates potential privacy risks and impacts of new systems, programs, or initiatives on personal information."}, {"id": "D5-Q049", "domain": 5, "question": "What is security program maturity model?", "options": ["Age of security programs", "Framework measuring security program development and capability", "Maturity of security staff", "Timeline for security implementation"], "correct": 1, "explanation": "Security program maturity models assess the development level and capability of security programs across different dimensions."}, {"id": "D5-Q050", "domain": 5, "question": "What is the purpose of privacy notice?", "options": ["To notify people of privacy laws", "To inform individuals how their data will be collected and used", "To warn about private property", "To announce privacy violations"], "correct": 1, "explanation": "Privacy notices inform individuals about what personal data is collected, how it\'s used, who it\'s shared with, and their rights."}];
+        const SIMULATION_DATA = [{"id": "D1-REM-001", "title": "Policy Fundamentals Deep Dive", "type": "remediation", "domain": 1, "difficulty": "beginner", "role": "grc_analyst"}, {"id": "D1-REM-002", "title": "Authentication & Access Foundations", "type": "remediation", "domain": 1, "difficulty": "beginner", "role": "security_engineer"}, {"id": "D1-REM-003", "title": "Cryptography Clinic", "type": "remediation", "domain": 1, "difficulty": "foundational", "role": "security_analyst"}, {"id": "D1-SIM-001", "title": "Security Controls Implementation", "type": "scenario", "domain": 1, "difficulty": "intermediate", "role": "Security Analyst"}, {"id": "D1-SIM-002", "title": "Security Concepts in Practice", "type": "scenario", "domain": 1, "difficulty": "intermediate", "role": "Security Engineer"}, {"id": "D1-SIM-003", "title": "The Encryption Emergency", "type": "remediation", "domain": 1, "difficulty": "intermediate", "role": "security_engineer"}, {"id": "D1-SIM-004", "title": "Zero Trust Migration", "type": "remediation", "domain": 1, "difficulty": "intermediate", "role": "security_engineer"}, {"id": "D1-SIM-005", "title": "The Gap Analysis", "type": "remediation", "domain": 1, "difficulty": "advanced", "role": "grc_analyst"}, {"id": "D2-REM-001_Know_Your_Enemy", "title": "Know Your Enemy", "type": "remediation", "domain": 2, "difficulty": "foundational", "role": "Security Analyst"}, {"id": "D2-REM-002_Malware_Menagerie", "title": "Malware Menagerie", "type": "remediation", "domain": 2, "difficulty": "foundational", "role": "Security Analyst"}, {"id": "D2-REM-003_Vulnerability_Deep_Dive", "title": "Vulnerability Deep Dive", "type": "remediation", "domain": 2, "difficulty": "foundational", "role": "Security Analyst"}, {"id": "D2-SIM-001", "title": "The Attribution Puzzle", "type": "remediation", "domain": 2, "difficulty": "intermediate", "role": "soc_analyst"}, {"id": "D2-SIM-001_Phishing_Campaign", "title": "The Phishing Campaign", "type": "scenario", "domain": 2, "difficulty": "intermediate", "role": "Security Analyst"}, {"id": "D2-SIM-002_Vulnerability_Management", "title": "Vulnerability Management Crisis", "type": "scenario", "domain": 2, "difficulty": "intermediate", "role": "Security Analyst"}, {"id": "D2-SIM-003_Ransomware_Response", "title": "The Ransomware Response", "type": "scenario", "domain": 2, "difficulty": "advanced", "role": "Security Analyst"}, {"id": "D2-SIM-004_Supply_Chain", "title": "Supply Chain Compromise", "type": "scenario", "domain": 2, "difficulty": "advanced", "role": "Security Analyst"}, {"id": "D2-SIM-005_Attack_Surface", "title": "Attack Surface Reduction", "type": "scenario", "domain": 2, "difficulty": "intermediate", "role": "Security Analyst"}, {"id": "D3-REM-001_Cloud_Fundamentals", "title": "Cloud Fundamentals Remediation", "type": "remediation", "domain": 3, "difficulty": "foundational", "role": "Security Analyst"}, {"id": "D3-REM-002_Network_Security", "title": "Network Security Basics Remediation", "type": "remediation", "domain": 3, "difficulty": "foundational", "role": "Security Analyst"}, {"id": "D3-REM-003_Cryptography", "title": "Cryptography Essentials Remediation", "type": "remediation", "domain": 3, "difficulty": "foundational", "role": "Security Analyst"}, {"id": "D3-SIM-001_Cloud_Security", "title": "Cloud Security Architecture", "type": "scenario", "domain": 3, "difficulty": "intermediate", "role": "Security Analyst"}, {"id": "D3-SIM-002_Zero_Trust", "title": "Zero Trust Implementation", "type": "scenario", "domain": 3, "difficulty": "intermediate", "role": "Security Analyst"}, {"id": "D3-SIM-003_Data_Protection", "title": "Data Protection Program", "type": "scenario", "domain": 3, "difficulty": "intermediate", "role": "Security Analyst"}, {"id": "D3-SIM-004_Infrastructure_Hardening", "title": "Infrastructure Hardening", "type": "scenario", "domain": 3, "difficulty": "intermediate", "role": "Security Analyst"}, {"id": "D3-SIM-005_Resilience_Recovery", "title": "Resilience and Recovery", "type": "scenario", "domain": 3, "difficulty": "advanced", "role": "Security Analyst"}, {"id": "D4-REM-001_Log_Analysis", "title": "Log Analysis Fundamentals", "type": "remediation", "domain": 4, "difficulty": "foundational", "role": "Security Analyst"}, {"id": "D4-REM-002_Incident_Response", "title": "Incident Response Basics", "type": "remediation", "domain": 4, "difficulty": "foundational", "role": "Security Analyst"}, {"id": "D4-REM-003_IAM_Concepts", "title": "IAM Concepts", "type": "remediation", "domain": 4, "difficulty": "foundational", "role": "Security Analyst"}, {"id": "D4-SIM-001_SOC_Operations", "title": "SOC Operations and Monitoring", "type": "scenario", "domain": 4, "difficulty": "intermediate", "role": "Security Analyst"}, {"id": "D4-SIM-002_Incident_Response", "title": "Incident Response", "type": "scenario", "domain": 4, "difficulty": "advanced", "role": "Security Analyst"}, {"id": "D4-SIM-003_Vulnerability_Management", "title": "Vulnerability Management", "type": "scenario", "domain": 4, "difficulty": "intermediate", "role": "Security Analyst"}, {"id": "D4-SIM-004_IAM", "title": "Identity and Access Management", "type": "scenario", "domain": 4, "difficulty": "intermediate", "role": "Security Analyst"}, {"id": "D4-SIM-005_Security_Automation", "title": "Security Automation and Orchestration", "type": "scenario", "domain": 4, "difficulty": "advanced", "role": "Security Analyst"}, {"id": "D5-REM-001", "title": "Policy and Governance Fundamentals", "type": "remediation", "domain": 5, "difficulty": "foundational", "role": "Junior Security Analyst"}, {"id": "D5-REM-002", "title": "Risk Assessment Basics", "type": "remediation", "domain": 5, "difficulty": "foundational", "role": "IT Security Specialist"}, {"id": "D5-REM-003", "title": "Compliance Concepts", "type": "remediation", "domain": 5, "difficulty": "foundational", "role": "IT Compliance Coordinator"}, {"id": "D5-SIM-001", "title": "Security Governance and Policy Development", "type": "scenario", "domain": 5, "difficulty": "intermediate", "role": "Security Policy Manager"}, {"id": "D5-SIM-002_Risk_Management", "title": "Risk Management", "type": "scenario", "domain": 5, "difficulty": "intermediate", "role": "Security Analyst"}, {"id": "D5-SIM-003_Third_Party_Risk", "title": "Third-Party Risk Management", "type": "scenario", "domain": 5, "difficulty": "intermediate", "role": "Security Analyst"}, {"id": "D5-SIM-004", "title": "Compliance and Audit Management", "type": "scenario", "domain": 5, "difficulty": "intermediate", "role": "Security Compliance Manager"}, {"id": "D5-SIM-005", "title": "Security Program Integration", "type": "scenario", "domain": 5, "difficulty": "advanced", "role": "Director of Security"}];
+        const LESSON_DATA = [{"id": "D1-LESSON-001", "title": "Security Controls Fundamentals", "domain": 1, "difficulty": "beginner", "objectives": ["1.1"]}, {"id": "D1-LESSON-002", "title": "CIA Triad and Security Fundamentals", "domain": 1, "difficulty": "beginner", "objectives": ["1.2"]}, {"id": "D1-LESSON-003", "title": "Authentication Methods and Factors", "domain": 1, "difficulty": "beginner", "objectives": ["1.2"]}, {"id": "D1-LESSON-004", "title": "Cryptographic Fundamentals", "domain": 1, "difficulty": "intermediate", "objectives": ["1.4"]}, {"id": "D1-LESSON-005", "title": "Zero Trust Architecture", "domain": 1, "difficulty": "intermediate", "objectives": ["1.2"]}, {"id": "D1-LESSON-006", "title": "Physical Security Controls", "domain": 1, "difficulty": "beginner", "objectives": ["1.2"]}, {"id": "D1-LESSON-007", "title": "Deception and Disruption Technologies", "domain": 1, "difficulty": "intermediate", "objectives": ["1.2"]}, {"id": "D1-LESSON-008", "title": "Change Management and Security", "domain": 1, "difficulty": "intermediate", "objectives": ["1.3"]}, {"id": "D2-LESSON-001", "title": "Threat Actors and Motivations", "domain": 2, "difficulty": "beginner", "objectives": ["2.1"]}, {"id": "D2-LESSON-002", "title": "Threat Vectors and Attack Surfaces", "domain": 2, "difficulty": "intermediate", "objectives": ["2.2"]}, {"id": "D2-LESSON-003", "title": "Social Engineering Attacks", "domain": 2, "difficulty": "intermediate", "objectives": ["2.2"]}, {"id": "D2-LESSON-004", "title": "Malware Types and Characteristics", "domain": 2, "difficulty": "intermediate", "objectives": ["2.4"]}, {"id": "D2-LESSON-005", "title": "Network-Based Attacks", "domain": 2, "difficulty": "intermediate", "objectives": ["2.4"]}, {"id": "D2-LESSON-006", "title": "Application Attacks", "domain": 2, "difficulty": "intermediate", "objectives": ["2.4"]}, {"id": "D2-LESSON-007", "title": "Vulnerability Management", "domain": 2, "difficulty": "intermediate", "objectives": ["2.3"]}, {"id": "D2-LESSON-008", "title": "Indicators of Compromise and Attack Detection", "domain": 2, "difficulty": "intermediate", "objectives": ["2.4"]}, {"id": "D2-LESSON-009", "title": "Hardening and Security Configurations", "domain": 2, "difficulty": "intermediate", "objectives": ["2.5"]}, {"id": "D2-LESSON-010", "title": "Mitigation Techniques", "domain": 2, "difficulty": "intermediate", "objectives": ["2.5"]}, {"id": "D2-LESSON-011", "title": "Attack Frameworks and Methodologies", "domain": 2, "difficulty": "intermediate", "objectives": ["2.1", "2.4"]}, {"id": "D2-LESSON-012", "title": "Security Assessments", "domain": 2, "difficulty": "intermediate", "objectives": ["2.3", "2.5"]}, {"id": "D3-LESSON-001", "title": "Security Architecture Concepts", "domain": 3, "difficulty": "intermediate", "objectives": ["3.1"]}, {"id": "D3-LESSON-002", "title": "Infrastructure Security", "domain": 3, "difficulty": "intermediate", "objectives": ["3.1"]}, {"id": "D3-LESSON-003", "title": "Network Security", "domain": 3, "difficulty": "intermediate", "objectives": ["3.2"]}, {"id": "D3-LESSON-004", "title": "Wireless Security", "domain": 3, "difficulty": "intermediate", "objectives": ["3.2"]}, {"id": "D3-LESSON-005", "title": "Cloud Security", "domain": 3, "difficulty": "intermediate", "objectives": ["3.1"]}, {"id": "D3-LESSON-006", "title": "Cryptography", "domain": 3, "difficulty": "intermediate", "objectives": ["3.3"]}, {"id": "D3-LESSON-007", "title": "Resilience and Recovery", "domain": 3, "difficulty": "intermediate", "objectives": ["3.4"]}, {"id": "D3-LESSON-008", "title": "Data Protection", "domain": 3, "difficulty": "intermediate", "objectives": ["3.3"]}, {"id": "D4-LESSON-002", "title": "Incident Response", "domain": 4, "difficulty": "intermediate", "objectives": ["4.8"]}, {"id": "D4-LESSON-003", "title": "Digital Forensics", "domain": 4, "difficulty": "intermediate", "objectives": ["4.9"]}, {"id": "D4-LESSON-004", "title": "Vulnerability Management", "domain": 4, "difficulty": "intermediate", "objectives": ["4.3"]}, {"id": "D4-LESSON-005", "title": "Identity and Access Management", "domain": 4, "difficulty": "intermediate", "objectives": ["4.6"]}, {"id": "D4-LESSON-006", "title": "Data Protection", "domain": 4, "difficulty": "intermediate", "objectives": ["4.2"]}, {"id": "D4-LESSON-007", "title": "Security Automation and Orchestration", "domain": 4, "difficulty": "intermediate", "objectives": ["4.5"]}, {"id": "D5-LESSON-001", "title": "Security Governance", "domain": 5, "difficulty": "intermediate", "objectives": ["5.1"]}, {"id": "D5-LESSON-002", "title": "Risk Management", "domain": 5, "difficulty": "intermediate", "objectives": ["5.2"]}, {"id": "D5-LESSON-003", "title": "Third-Party Risk Management", "domain": 5, "difficulty": "intermediate", "objectives": ["5.3"]}, {"id": "D5-LESSON-004", "title": "Security Compliance", "domain": 5, "difficulty": "intermediate", "objectives": ["5.4"]}, {"id": "D5-LESSON-005", "title": "Audits and Assessments", "domain": 5, "difficulty": "intermediate", "objectives": ["5.5"]}, {"id": "D5-LESSON-006", "title": "Security Awareness", "domain": 5, "difficulty": "beginner", "objectives": ["5.6"]}];
+        const GLOSSARY_DATA = {"1": [{"term": "CIA Triad", "definition": "Confidentiality, Integrity, and Availability - the three fundamental security principles"}, {"term": "Defense in Depth", "definition": "Multiple layers of security controls to protect assets"}, {"term": "Zero Trust", "definition": "Security model requiring strict verification for every person and device"}, {"term": "Least Privilege", "definition": "Users have only minimum access rights needed for their job"}, {"term": "Separation of Duties", "definition": "Critical tasks require multiple people to complete"}, {"term": "MFA", "definition": "Multi-Factor Authentication - requires multiple verification methods"}, {"term": "SSO", "definition": "Single Sign-On - one credential set for multiple applications"}, {"term": "RBAC", "definition": "Role-Based Access Control - permissions based on job roles"}], "2": [{"term": "APT", "definition": "Advanced Persistent Threat - sophisticated, long-term targeted attacks"}, {"term": "Ransomware", "definition": "Malware that encrypts data and demands payment for decryption"}, {"term": "Phishing", "definition": "Social engineering using deceptive emails to steal information"}, {"term": "Zero-Day", "definition": "Vulnerability unknown to vendor with no available patch"}, {"term": "Malware", "definition": "Malicious software designed to damage or gain unauthorized access"}, {"term": "Botnet", "definition": "Network of infected computers controlled remotely"}, {"term": "DDoS", "definition": "Distributed Denial of Service - overwhelming a service with traffic"}, {"term": "CVE", "definition": "Common Vulnerabilities and Exposures - standardized vulnerability identification"}], "3": [{"term": "Encryption", "definition": "Converting data to unreadable format to protect confidentiality"}, {"term": "VPN", "definition": "Virtual Private Network - secure tunnel for network communications"}, {"term": "Firewall", "definition": "Network security device controlling traffic based on rules"}, {"term": "IDS/IPS", "definition": "Intrusion Detection/Prevention System for network monitoring"}, {"term": "DMZ", "definition": "Demilitarized Zone - network segment between internal and external"}, {"term": "VLAN", "definition": "Virtual LAN - logical network segmentation"}, {"term": "PKI", "definition": "Public Key Infrastructure - framework for digital certificates"}, {"term": "TLS/SSL", "definition": "Transport Layer Security - protocols for secure communications"}], "4": [{"term": "SIEM", "definition": "Security Information and Event Management - centralized log analysis"}, {"term": "SOC", "definition": "Security Operations Center - team monitoring security events"}, {"term": "Incident Response", "definition": "Organized approach to addressing security breaches"}, {"term": "Digital Forensics", "definition": "Investigation and recovery of digital evidence"}, {"term": "Chain of Custody", "definition": "Documentation tracking evidence handling"}, {"term": "IOC", "definition": "Indicators of Compromise - evidence of security breach"}, {"term": "Playbook", "definition": "Documented procedures for handling security incidents"}, {"term": "SOAR", "definition": "Security Orchestration, Automation and Response"}], "5": [{"term": "Risk Assessment", "definition": "Process of identifying and evaluating security risks"}, {"term": "Compliance", "definition": "Adherence to laws, regulations, and standards"}, {"term": "Governance", "definition": "Framework for security decision-making and accountability"}, {"term": "BIA", "definition": "Business Impact Analysis - identifying critical business functions"}, {"term": "RTO/RPO", "definition": "Recovery Time/Point Objective - acceptable downtime and data loss"}, {"term": "Policy", "definition": "High-level statement of security intent and direction"}, {"term": "Audit", "definition": "Systematic examination of security controls and compliance"}, {"term": "Third-Party Risk", "definition": "Security risks from vendors and business partners"}]};
+        
+        // Main App Component
+        const App = () => {
+            const [view, setView] = useState('hub');
+            const [currentDomain, setCurrentDomain] = useState(null);
+            const [currentItem, setCurrentItem] = useState(null);
+            const [progress, setProgress] = useState(() => {
+                const saved = localStorage.getItem('securityPlusV92Progress');
+                try {
+                    return saved ? JSON.parse(saved) : {
+                        completedQuizzes: [],
+                        completedSimulations: [],
+                        completedLessons: [],
+                        wrongAnswers: [],
+                        finalReviewScores: []
+                    };
+                } catch {
+                    return {
+                        completedQuizzes: [],
+                        completedSimulations: [],
+                        completedLessons: [],
+                        wrongAnswers: [],
+                        finalReviewScores: []
+                    };
+                }
+            });
+            
+            useEffect(() => {
+                localStorage.setItem('securityPlusV92Progress', JSON.stringify(progress));
+            }, [progress]);
+            
+            const navigateTo = (newView, domain = null, item = null) => {
+                setView(newView);
+                setCurrentDomain(domain);
+                setCurrentItem(item);
+                window.scrollTo(0, 0);
+            };
+            
+            return (
+                <div className="app-container">
+                    <header className="header">
+                        <h1>Security+ SY0-701 v9.2</h1>
+                        <div className="header-actions">
+                            <button className="button secondary" onClick={() => navigateTo('hub')}>
+                                🏠 Home
+                            </button>
+                            <button className="button warning" onClick={() => navigateTo('final-review')}>
+                                📊 Final Review
+                            </button>
+                            <button 
+                                className="button danger" 
+                                onClick={() => {
+                                    if (confirm('Clear all progress?')) {
+                                        setProgress({
+                                            completedQuizzes: [],
+                                            completedSimulations: [],
+                                            completedLessons: [],
+                                            wrongAnswers: [],
+                                            finalReviewScores: []
+                                        });
+                                        navigateTo('hub');
+                                    }
+                                }}
+                            >
+                                🗑️ Reset
+                            </button>
+                        </div>
+                    </header>
+                    
+                    <main className="main-content">
+                        {view === 'hub' && <Hub navigateTo={navigateTo} progress={progress} />}
+                        
+                        {view === 'domain' && currentDomain && (
+                            <DomainView
+                                domain={currentDomain}
+                                navigateTo={navigateTo}
+                                progress={progress}
+                                setProgress={setProgress}
+                            />
+                        )}
+                        
+                        {view === 'simulation-viewer' && currentItem && (
+                            <SimulationViewer
+                                simulation={currentItem}
+                                domain={currentDomain}
+                                onBack={() => navigateTo('domain', currentDomain)}
+                            />
+                        )}
+                        
+                        {view === 'lesson-viewer' && currentItem && (
+                            <LessonViewer
+                                lesson={currentItem}
+                                domain={currentDomain}
+                                onBack={() => navigateTo('domain', currentDomain)}
+                            />
+                        )}
+                        
+                        {view === 'final-review' && (
+                            <FinalReview
+                                navigateTo={navigateTo}
+                                progress={progress}
+                                setProgress={setProgress}
+                            />
+                        )}
+                    </main>
+                </div>
+            );
+        };
+        
+        // Hub Component
+        const Hub = ({ navigateTo, progress }) => {
+            const calculateDomainProgress = (domainId) => {
+                const quizComplete = (progress.completedQuizzes || []).some(id => 
+                    id && id.includes(`D${domainId}`)
+                );
+                const sims = SIMULATION_DATA.filter(s => s && s.domain === domainId);
+                const completedSims = sims.filter(s => 
+                    (progress.completedSimulations || []).includes(s.id)
+                ).length;
+                const lessons = LESSON_DATA.filter(l => l && l.domain === domainId);
+                const completedLessons = lessons.filter(l =>
+                    (progress.completedLessons || []).includes(l.id)
+                ).length;
+                
+                const total = 1 + sims.length + lessons.length;
+                const completed = (quizComplete ? 1 : 0) + completedSims + completedLessons;
+                
+                return total > 0 ? Math.round((completed / total) * 100) : 0;
+            };
+            
+            return (
+                <div>
+                    <h2 style={{ marginBottom: '0.5rem' }}>Security+ Training Dashboard</h2>
+                    <p style={{ color: '#a1a1aa', marginBottom: '2rem' }}>
+                        Master each domain through simulations, lessons, quizzes, and remediation
+                    </p>
+                    
+                    <div className="hub-grid">
+                        {DOMAINS.map(domain => {
+                            const progress = calculateDomainProgress(domain.id);
+                            const domainQuestions = QUESTION_DATA.filter(q => q && q.domain === domain.id);
+                            const domainSims = SIMULATION_DATA.filter(s => s && s.domain === domain.id);
+                            const domainLessons = LESSON_DATA.filter(l => l && l.domain === domain.id);
+                            const remSims = domainSims.filter(s => s.type === 'remediation');
+                            const scenarioSims = domainSims.filter(s => s.type !== 'remediation');
+                            
+                            return (
+                                <div
+                                    key={domain.id}
+                                    className="domain-card"
+                                    style={{ '--domain-color': domain.color }}
+                                    onClick={() => navigateTo('domain', domain)}
+                                >
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                                        <div style={{
+                                            width: '48px',
+                                            height: '48px',
+                                            borderRadius: '50%',
+                                            background: domain.color,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontWeight: 'bold',
+                                            fontSize: '1.3rem'
+                                        }}>
+                                            {domain.id}
+                                        </div>
+                                        <div className="badge info">{Math.round(domain.weight * 100)}% weight</div>
+                                    </div>
+                                    
+                                    <div style={{ fontWeight: '600', marginBottom: '0.5rem', fontSize: '1.05rem' }}>
+                                        {domain.name}
+                                    </div>
+                                    
+                                    <div style={{ 
+                                        height: '6px', 
+                                        background: '#27272a', 
+                                        borderRadius: '3px',
+                                        overflow: 'hidden',
+                                        marginBottom: '1rem'
+                                    }}>
+                                        <div style={{
+                                            height: '100%',
+                                            width: `${progress}%`,
+                                            background: domain.color,
+                                            transition: 'width 0.5s ease'
+                                        }} />
+                                    </div>
+                                    
+                                    <div style={{ 
+                                        display: 'grid', 
+                                        gridTemplateColumns: 'repeat(2, 1fr)',
+                                        gap: '0.5rem',
+                                        fontSize: '0.9rem', 
+                                        color: '#a1a1aa' 
+                                    }}>
+                                        <div>📚 {domainLessons.length} lessons</div>
+                                        <div>🎮 {scenarioSims.length} simulations</div>
+                                        <div>❓ {domainQuestions.length} questions</div>
+                                        <div>🔧 {remSims.length} remediation</div>
+                                    </div>
+                                    
+                                    {progress === 100 && (
+                                        <div className="badge success" style={{ marginTop: '0.5rem' }}>
+                                            ✓ Complete
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                    
+                    <div style={{ marginTop: '3rem', textAlign: 'center' }}>
+                        <button 
+                            className="button warning"
+                            onClick={() => navigateTo('final-review')}
+                            style={{ fontSize: '1.1rem', padding: '1rem 2.5rem' }}
+                        >
+                            📊 Take Final Review Test
+                        </button>
+                        <p style={{ color: '#a1a1aa', marginTop: '1rem' }}>
+                            Test your knowledge across all domains and identify weak areas
+                        </p>
+                    </div>
+                </div>
+            );
+        };
+        
+        // Domain View with 4 tabs
+        const DomainView = ({ domain, navigateTo, progress, setProgress }) => {
+            const [tab, setTab] = useState('simulations');
+            const [selectedQuiz, setSelectedQuiz] = useState(false);
+            const [selectedRemediation, setSelectedRemediation] = useState(null);
+            
+            const domainQuestions = useMemo(() => 
+                QUESTION_DATA.filter(q => q && q.domain === domain.id), 
+                [domain.id]
+            );
+            
+            const domainSims = useMemo(() => 
+                SIMULATION_DATA.filter(s => s && s.domain === domain.id && s.type !== 'remediation'), 
+                [domain.id]
+            );
+            
+            const domainRemediation = useMemo(() => 
+                SIMULATION_DATA.filter(s => s && s.domain === domain.id && s.type === 'remediation'),
+                [domain.id]
+            );
+            
+            const domainLessons = useMemo(() => 
+                LESSON_DATA.filter(l => l && l.domain === domain.id), 
+                [domain.id]
+            );
+            
+            const domainGlossary = GLOSSARY_DATA[domain.id] || [];
+            
+            return (
+                <div style={{ '--domain-color': domain.color }}>
+                    <button 
+                        className="button secondary" 
+                        onClick={() => navigateTo('hub')}
+                        style={{ marginBottom: '1rem' }}
+                    >
+                        ← Back to Hub
+                    </button>
+                    
+                    <h2 style={{ marginBottom: '0.5rem' }}>Domain {domain.id}: {domain.name}</h2>
+                    <p style={{ color: '#a1a1aa', marginBottom: '2rem' }}>
+                        {Math.round(domain.weight * 100)}% of exam weight
+                    </p>
+                    
+                    <div className="tabs">
+                        <button 
+                            className={`tab ${tab === 'simulations' ? 'active' : ''}`}
+                            onClick={() => setTab('simulations')}
+                        >
+                            🎮 Simulations
+                        </button>
+                        <button 
+                            className={`tab ${tab === 'lessons' ? 'active' : ''}`}
+                            onClick={() => setTab('lessons')}
+                        >
+                            📚 Lesson Plans
+                        </button>
+                        <button 
+                            className={`tab ${tab === 'quiz' ? 'active' : ''}`}
+                            onClick={() => setTab('quiz')}
+                        >
+                            ❓ Quiz
+                        </button>
+                        <button 
+                            className={`tab ${tab === 'remediation' ? 'active' : ''}`}
+                            onClick={() => setTab('remediation')}
+                        >
+                            🔧 Remediation
+                        </button>
+                        <button 
+                            className={`tab ${tab === 'glossary' ? 'active' : ''}`}
+                            onClick={() => setTab('glossary')}
+                        >
+                            📖 Glossary
+                        </button>
+                    </div>
+                    
+                    <div className="content-container">
+                        {tab === 'simulations' && (
+                            <div>
+                                <h3 style={{ marginBottom: '1rem' }}>Interactive Simulations</h3>
+                                {domainSims.length > 0 ? (
+                                    <div className="content-grid">
+                                        {domainSims.map(sim => {
+                                            const isCompleted = (progress.completedSimulations || []).includes(sim.id);
+                                            return (
+                                                <div 
+                                                    key={sim.id} 
+                                                    className="content-item"
+                                                    onClick={() => navigateTo('simulation-viewer', domain, sim)}
+                                                >
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                        <div>
+                                                            <div style={{ fontWeight: '500', marginBottom: '0.25rem' }}>
+                                                                {sim.title}
+                                                            </div>
+                                                            <div style={{ fontSize: '0.9rem', color: '#a1a1aa' }}>
+                                                                {sim.difficulty} • {sim.role || 'Security Analyst'}
+                                                            </div>
+                                                        </div>
+                                                        {isCompleted && <div className="badge success">✓</div>}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                ) : (
+                                    <div className="info-box">No simulations available for this domain.</div>
+                                )}
+                            </div>
+                        )}
+                        
+                        {tab === 'lessons' && (
+                            <div>
+                                <h3 style={{ marginBottom: '1rem' }}>Lesson Plans</h3>
+                                {domainLessons.length > 0 ? (
+                                    <div className="content-grid">
+                                        {domainLessons.map(lesson => {
+                                            const isCompleted = (progress.completedLessons || []).includes(lesson.id);
+                                            return (
+                                                <div 
+                                                    key={lesson.id} 
+                                                    className="content-item"
+                                                    onClick={() => navigateTo('lesson-viewer', domain, lesson)}
+                                                >
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                        <div>
+                                                            <div style={{ fontWeight: '500', marginBottom: '0.25rem' }}>
+                                                                {lesson.title}
+                                                            </div>
+                                                            <div style={{ fontSize: '0.9rem', color: '#a1a1aa' }}>
+                                                                {lesson.difficulty || 'Intermediate'} • 
+                                                                Covers: {(lesson.objectives || []).join(', ') || 'Multiple objectives'}
+                                                            </div>
+                                                        </div>
+                                                        {isCompleted && <div className="badge success">✓</div>}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                ) : (
+                                    <div className="info-box">No lessons available for this domain.</div>
+                                )}
+                            </div>
+                        )}
+                        
+                        {tab === 'quiz' && (
+                            <div>
+                                {!selectedQuiz ? (
+                                    <div>
+                                        <h3 style={{ marginBottom: '1rem' }}>Domain Quiz</h3>
+                                        <div className="info-box">
+                                            <h4>Quiz Information</h4>
+                                            <ul style={{ marginTop: '0.5rem', paddingLeft: '1.5rem' }}>
+                                                <li>{domainQuestions.length} questions available</li>
+                                                <li>Passing score: 85%</li>
+                                                <li>Immediate feedback provided</li>
+                                                <li>Wrong answers tracked for review</li>
+                                            </ul>
+                                        </div>
+                                        <button 
+                                            className="button"
+                                            onClick={() => setSelectedQuiz(true)}
+                                            style={{ marginTop: '1rem' }}
+                                        >
+                                            Start Quiz →
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <QuizComponent
+                                        questions={domainQuestions}
+                                        domain={domain}
+                                        onComplete={() => {
+                                            setProgress(prev => ({
+                                                ...prev,
+                                                completedQuizzes: [...(prev.completedQuizzes || []), `D${domain.id}-quiz`]
+                                            }));
+                                            setSelectedQuiz(false);
+                                        }}
+                                        onBack={() => setSelectedQuiz(false)}
+                                    />
+                                )}
+                            </div>
+                        )}
+                        
+                        {tab === 'remediation' && (
+                            <div>
+                                <h3 style={{ marginBottom: '1rem' }}>Remediation Exercises</h3>
+                                {domainRemediation.length > 0 ? (
+                                    <div className="content-grid">
+                                        {domainRemediation.map(rem => (
+                                            <div 
+                                                key={rem.id} 
+                                                className="content-item"
+                                                style={{ borderLeftColor: '#f59e0b' }}
+                                                onClick={() => navigateTo('simulation-viewer', domain, rem)}
+                                            >
+                                                <div>
+                                                    <div style={{ fontWeight: '500', marginBottom: '0.25rem' }}>
+                                                        <span className="badge warning" style={{ marginRight: '0.5rem' }}>REM</span>
+                                                        {rem.title}
+                                                    </div>
+                                                    <div style={{ fontSize: '0.9rem', color: '#a1a1aa' }}>
+                                                        {rem.difficulty || 'Foundational'} • Targeted practice
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="info-box">No remediation exercises available for this domain.</div>
+                                )}
+                            </div>
+                        )}
+                        
+                        {tab === 'glossary' && (
+                            <div>
+                                <h3 style={{ marginBottom: '1rem' }}>Domain Glossary</h3>
+                                {domainGlossary.length > 0 ? (
+                                    <div className="glossary-grid">
+                                        {domainGlossary.map((term, idx) => (
+                                            <div key={idx} className="glossary-term">
+                                                <div className="glossary-term-name">{term.term}</div>
+                                                <div className="glossary-definition">{term.definition}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="info-box">No glossary terms defined for this domain.</div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+        
+        // Simulation Viewer Component
+        const SimulationViewer = ({ simulation, domain, onBack }) => {
+            return (
+                <div className="simulation-viewer" style={{ '--domain-color': domain?.color || '#6366f1' }}>
+                    <button className="button secondary" onClick={onBack} style={{ marginBottom: '1rem' }}>
+                        ← Back to Domain
+                    </button>
+                    
+                    <div className="viewer-header">
+                        <h2>{simulation.title}</h2>
+                        <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
+                            <span className={`badge ${simulation.type === 'remediation' ? 'warning' : 'info'}`}>
+                                {simulation.type === 'remediation' ? 'REMEDIATION' : 'SIMULATION'}
+                            </span>
+                            <span className="badge">
+                                {simulation.difficulty || 'Intermediate'}
+                            </span>
+                            <span className="badge">
+                                {simulation.role || 'Security Analyst'}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div className="viewer-content">
+                        <div className="info-box" style={{ marginBottom: '2rem' }}>
+                            <h3>Simulation Information</h3>
+                            <p style={{ marginTop: '0.5rem' }}>
+                                This is a placeholder for the full simulation content. 
+                                In the complete implementation, this would load the full JSON data 
+                                including decision points, scenarios, and interactive elements.
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3>Simulation Details</h3>
+                            <ul style={{ marginTop: '1rem', paddingLeft: '1.5rem', lineHeight: 1.8 }}>
+                                <li><strong>ID:</strong> {simulation.id}</li>
+                                <li><strong>Type:</strong> {simulation.type}</li>
+                                <li><strong>Domain:</strong> {domain?.name || 'Unknown'}</li>
+                                <li><strong>Difficulty:</strong> {simulation.difficulty || 'Not specified'}</li>
+                                <li><strong>Role:</strong> {simulation.role || 'Not specified'}</li>
+                            </ul>
+                        </div>
+                        
+                        {simulation.type === 'remediation' && (
+                            <div className="warning-box" style={{ marginTop: '2rem' }}>
+                                <h4>📚 Remediation Focus</h4>
+                                <p>
+                                    This exercise is designed to reinforce fundamental concepts and 
+                                    address common knowledge gaps in this domain.
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+        
+        // Lesson Viewer Component
+        const LessonViewer = ({ lesson, domain, onBack }) => {
+            return (
+                <div className="lesson-viewer" style={{ '--domain-color': domain?.color || '#6366f1' }}>
+                    <button className="button secondary" onClick={onBack} style={{ marginBottom: '1rem' }}>
+                        ← Back to Domain
+                    </button>
+                    
+                    <div className="viewer-header">
+                        <h2>{lesson.title}</h2>
+                        <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
+                            <span className="badge info">LESSON</span>
+                            <span className="badge">
+                                {lesson.difficulty || 'Intermediate'}
+                            </span>
+                            {lesson.objectives && lesson.objectives.length > 0 && (
+                                <span className="badge">
+                                    Objectives: {lesson.objectives.join(', ')}
+                                </span>
+                            )}
+                        </div>
+                    </div>
+                    
+                    <div className="viewer-content">
+                        <div className="info-box" style={{ marginBottom: '2rem' }}>
+                            <h3>Lesson Content</h3>
+                            <p style={{ marginTop: '0.5rem' }}>
+                                This is a placeholder for the full lesson content. 
+                                In the complete implementation, this would display the lesson sections,
+                                key points, examples, and knowledge checks from the JSON data.
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3>Lesson Structure</h3>
+                            <ul style={{ marginTop: '1rem', paddingLeft: '1.5rem', lineHeight: 1.8 }}>
+                                <li><strong>ID:</strong> {lesson.id}</li>
+                                <li><strong>Domain:</strong> {domain?.name || 'Unknown'}</li>
+                                <li><strong>Difficulty:</strong> {lesson.difficulty || 'Not specified'}</li>
+                                <li><strong>Objectives:</strong> {lesson.objectives?.join(', ') || 'Multiple objectives'}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        
+        // Quiz Component (simplified)
+        const QuizComponent = ({ questions, domain, onComplete, onBack }) => {
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [selectedAnswer, setSelectedAnswer] = useState(null);
+            const [showFeedback, setShowFeedback] = useState(false);
+            const [score, setScore] = useState(0);
+            const [quizComplete, setQuizComplete] = useState(false);
+            
+            const currentQuestion = questions[currentIndex];
+            
+            const handleSubmit = () => {
+                if (selectedAnswer === null) return;
+                
+                const correct = currentQuestion.correct ?? currentQuestion.correct_answer ?? 0;
+                if (selectedAnswer === correct) {
+                    setScore(score + 1);
+                }
+                setShowFeedback(true);
+            };
+            
+            const handleNext = () => {
+                if (currentIndex < questions.length - 1) {
+                    setCurrentIndex(currentIndex + 1);
+                    setSelectedAnswer(null);
+                    setShowFeedback(false);
+                } else {
+                    setQuizComplete(true);
+                    if (onComplete) onComplete();
+                }
+            };
+            
+            if (quizComplete) {
+                const percentage = Math.round((score / questions.length) * 100);
+                const passed = percentage >= 85;
+                
+                return (
+                    <div>
+                        <h3>Quiz Complete!</h3>
+                        <div style={{ textAlign: 'center', padding: '2rem' }}>
+                            <div style={{ fontSize: '3rem', fontWeight: 'bold' }}>
+                                {score}/{questions.length}
+                            </div>
+                            <div style={{ fontSize: '1.5rem', color: '#a1a1aa' }}>
+                                {percentage}%
+                            </div>
+                            <div className={`badge ${passed ? 'success' : 'warning'}`} style={{ fontSize: '1rem', marginTop: '1rem' }}>
+                                {passed ? '✓ Passed' : '⚠ Needs Review'}
+                            </div>
+                        </div>
+                        <button className="button secondary" onClick={onBack} style={{ marginTop: '1rem' }}>
+                            Back to Domain
+                        </button>
+                    </div>
+                );
+            }
+            
+            return (
+                <div>
+                    <div style={{ marginBottom: '2rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                            <span>Question {currentIndex + 1} of {questions.length}</span>
+                            <span>Score: {score}/{currentIndex}</span>
+                        </div>
+                        <div style={{ 
+                            height: '4px', 
+                            background: '#27272a', 
+                            borderRadius: '2px',
+                            overflow: 'hidden'
+                        }}>
+                            <div style={{
+                                height: '100%',
+                                width: `${((currentIndex + 1) / questions.length) * 100}%`,
+                                background: domain?.color || '#6366f1',
+                                transition: 'width 0.3s ease'
+                            }} />
+                        </div>
+                    </div>
+                    
+                    <h3 style={{ marginBottom: '1.5rem' }}>{currentQuestion.question}</h3>
+                    
+                    <div className="options">
+                        {currentQuestion.options.map((option, idx) => (
+                            <div
+                                key={idx}
+                                className={`option 
+                                    ${selectedAnswer === idx ? 'selected' : ''}
+                                    ${showFeedback && idx === (currentQuestion.correct ?? currentQuestion.correct_answer ?? 0) ? 'correct' : ''}
+                                    ${showFeedback && selectedAnswer === idx && idx !== (currentQuestion.correct ?? currentQuestion.correct_answer ?? 0) ? 'incorrect' : ''}
+                                    ${showFeedback ? 'disabled' : ''}
+                                `}
+                                onClick={() => !showFeedback && setSelectedAnswer(idx)}
+                            >
+                                <div style={{
+                                    width: '28px',
+                                    height: '28px',
+                                    borderRadius: '50%',
+                                    background: selectedAnswer === idx ? (domain?.color || '#6366f1') : '#6366f1',
+                                    color: 'white',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontWeight: 'bold',
+                                    flexShrink: 0
+                                }}>
+                                    {String.fromCharCode(65 + idx)}
+                                </div>
+                                <div style={{ flex: 1 }}>{option}</div>
+                            </div>
+                        ))}
+                    </div>
+                    
+                    {showFeedback && (
+                        <div className={selectedAnswer === (currentQuestion.correct ?? currentQuestion.correct_answer ?? 0) ? 'success-box' : 'warning-box'} style={{ marginTop: '1rem' }}>
+                            <strong>{selectedAnswer === (currentQuestion.correct ?? currentQuestion.correct_answer ?? 0) ? '✓ Correct!' : '✗ Incorrect'}</strong>
+                            <p style={{ marginTop: '0.5rem' }}>{currentQuestion.explanation}</p>
+                        </div>
+                    )}
+                    
+                    <div style={{ marginTop: '2rem' }}>
+                        {!showFeedback ? (
+                            <button 
+                                className="button"
+                                onClick={handleSubmit}
+                                disabled={selectedAnswer === null}
+                            >
+                                Submit Answer
+                            </button>
+                        ) : (
+                            <button className="button success" onClick={handleNext}>
+                                {currentIndex < questions.length - 1 ? 'Next Question →' : 'View Results'}
+                            </button>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+        
+        // Final Review Test Component
+        const FinalReview = ({ navigateTo, progress, setProgress }) => {
+            const [testStarted, setTestStarted] = useState(false);
+            const [testComplete, setTestComplete] = useState(false);
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [selectedAnswer, setSelectedAnswer] = useState(null);
+            const [answers, setAnswers] = useState([]);
+            const [testQuestions, setTestQuestions] = useState([]);
+            
+            // Generate test with weighted distribution
+            const generateTest = () => {
+                const test = [];
+                const totalQuestions = 50;
+                
+                DOMAINS.forEach(domain => {
+                    const domainQuestions = QUESTION_DATA.filter(q => q && q.domain === domain.id);
+                    const count = Math.round(totalQuestions * domain.weight);
+                    const shuffled = [...domainQuestions].sort(() => Math.random() - 0.5);
+                    test.push(...shuffled.slice(0, Math.min(count, shuffled.length)));
+                });
+                
+                return test.sort(() => Math.random() - 0.5).slice(0, totalQuestions);
+            };
+            
+            const startTest = () => {
+                setTestQuestions(generateTest());
+                setTestStarted(true);
+            };
+            
+            const handleSubmit = () => {
+                if (selectedAnswer === null) return;
+                
+                const currentQuestion = testQuestions[currentIndex];
+                const correct = currentQuestion.correct ?? currentQuestion.correct_answer ?? 0;
+                
+                setAnswers([...answers, {
+                    question: currentQuestion,
+                    userAnswer: selectedAnswer,
+                    correct: selectedAnswer === correct
+                }]);
+                
+                if (currentIndex < testQuestions.length - 1) {
+                    setCurrentIndex(currentIndex + 1);
+                    setSelectedAnswer(null);
+                } else {
+                    setTestComplete(true);
+                }
+            };
+            
+            if (testComplete) {
+                const score = answers.filter(a => a.correct).length;
+                const percentage = Math.round((score / testQuestions.length) * 100);
+                
+                // Analyze weak areas
+                const domainPerformance = {};
+                DOMAINS.forEach(d => {
+                    const domainAnswers = answers.filter(a => a.question.domain === d.id);
+                    const correct = domainAnswers.filter(a => a.correct).length;
+                    domainPerformance[d.id] = {
+                        domain: d,
+                        correct,
+                        total: domainAnswers.length,
+                        percentage: domainAnswers.length > 0 ? Math.round((correct / domainAnswers.length) * 100) : 0
+                    };
+                });
+                
+                const weakAreas = Object.values(domainPerformance)
+                    .filter(p => p.percentage < 85 && p.total > 0)
+                    .sort((a, b) => a.percentage - b.percentage);
+                
+                return (
+                    <div className="final-review-container">
+                        <h2>Final Review Complete!</h2>
+                        
+                        <div style={{ textAlign: 'center', padding: '2rem', background: '#18181b', borderRadius: '12px', marginTop: '2rem' }}>
+                            <div style={{ fontSize: '4rem', fontWeight: 'bold' }}>
+                                {score}/{testQuestions.length}
+                            </div>
+                            <div style={{ fontSize: '2rem', color: '#a1a1aa' }}>
+                                {percentage}%
+                            </div>
+                            <div className={`badge ${percentage >= 85 ? 'success' : 'warning'}`} style={{ fontSize: '1.2rem', marginTop: '1rem' }}>
+                                {percentage >= 85 ? '🎉 READY FOR EXAM!' : '📚 MORE STUDY NEEDED'}
+                            </div>
+                        </div>
+                        
+                        {weakAreas.length > 0 && (
+                            <div className="weakness-analysis">
+                                <h3>📊 Areas Needing Improvement</h3>
+                                {weakAreas.map(area => {
+                                    const remediation = SIMULATION_DATA.filter(s => 
+                                        s && s.domain === area.domain.id && s.type === 'remediation'
+                                    );
+                                    
+                                    return (
+                                        <div key={area.domain.id} className="weak-area-item">
+                                            <div style={{ marginBottom: '0.5rem' }}>
+                                                <strong>Domain {area.domain.id}: {area.domain.name}</strong>
+                                            </div>
+                                            <div style={{ color: '#a1a1aa', marginBottom: '0.5rem' }}>
+                                                Score: {area.correct}/{area.total} ({area.percentage}%)
+                                            </div>
+                                            
+                                            {remediation.length > 0 && (
+                                                <div className="recommended-remediation">
+                                                    <strong>Recommended Remediation:</strong>
+                                                    <ul style={{ marginTop: '0.5rem', paddingLeft: '1.5rem' }}>
+                                                        {remediation.slice(0, 3).map(r => (
+                                                            <li key={r.id}>{r.title}</li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                        
+                        <button 
+                            className="button secondary" 
+                            onClick={() => navigateTo('hub')}
+                            style={{ marginTop: '2rem' }}
+                        >
+                            Back to Hub
+                        </button>
+                    </div>
+                );
+            }
+            
+            if (!testStarted) {
+                return (
+                    <div className="final-review-container">
+                        <h2>Final Review Test</h2>
+                        
+                        <div className="info-box" style={{ marginTop: '2rem' }}>
+                            <h3>Test Information</h3>
+                            <ul style={{ marginTop: '1rem', paddingLeft: '1.5rem', lineHeight: 1.8 }}>
+                                <li>50 questions total</li>
+                                <li>Domain-weighted distribution</li>
+                                <li>Covers all 5 domains</li>
+                                <li>Passing score: 85%</li>
+                                <li>Identifies weak areas for remediation</li>
+                            </ul>
+                        </div>
+                        
+                        <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem' }}>
+                            <button className="button" onClick={startTest}>
+                                Start Final Review →
+                            </button>
+                            <button className="button secondary" onClick={() => navigateTo('hub')}>
+                                Back to Hub
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+            
+            const currentQuestion = testQuestions[currentIndex];
+            
+            return (
+                <div className="final-review-container">
+                    <h2>Final Review Test</h2>
+                    
+                    <div style={{ marginTop: '2rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                            <span>Question {currentIndex + 1} of {testQuestions.length}</span>
+                            <span>Domain {currentQuestion.domain}</span>
+                        </div>
+                        
+                        <div style={{ 
+                            height: '4px', 
+                            background: '#27272a', 
+                            borderRadius: '2px',
+                            overflow: 'hidden',
+                            marginBottom: '2rem'
+                        }}>
+                            <div style={{
+                                height: '100%',
+                                width: `${((currentIndex + 1) / testQuestions.length) * 100}%`,
+                                background: '#6366f1',
+                                transition: 'width 0.3s ease'
+                            }} />
+                        </div>
+                        
+                        <h3 style={{ marginBottom: '1.5rem' }}>{currentQuestion.question}</h3>
+                        
+                        <div className="options">
+                            {currentQuestion.options.map((option, idx) => (
+                                <div
+                                    key={idx}
+                                    className={`option ${selectedAnswer === idx ? 'selected' : ''}`}
+                                    onClick={() => setSelectedAnswer(idx)}
+                                >
+                                    <div style={{
+                                        width: '28px',
+                                        height: '28px',
+                                        borderRadius: '50%',
+                                        background: selectedAnswer === idx ? '#6366f1' : '#6366f1',
+                                        color: 'white',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontWeight: 'bold',
+                                        flexShrink: 0
+                                    }}>
+                                        {String.fromCharCode(65 + idx)}
+                                    </div>
+                                    <div style={{ flex: 1 }}>{option}</div>
+                                </div>
+                            ))}
+                        </div>
+                        
+                        <button 
+                            className="button"
+                            onClick={handleSubmit}
+                            disabled={selectedAnswer === null}
+                            style={{ marginTop: '2rem' }}
+                        >
+                            Submit & Continue →
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+        
+        // Mount the application
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
